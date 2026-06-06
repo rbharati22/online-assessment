@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Assessment-1</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+      :root {
+            /* Backgrounds: Deep oceanic teal */
+            --bg-color: #081c24; 
+            --container-bg: #122b36; 
+            --input-bg: #1d3b48; 
+            
+            /* Text & Accents: Soft whites and muted blues */ 
+            --text-color: #e2e8f0; 
+            --mod2-color: #38bdf8; 
+            --mod5-color: #818cf8; 
+            
+            /* Buttons & Status: Gentle green and amber */
+            --btn-bg: #0ea5e9; 
+            --btn-hover: #0284c7; 
+            --correct-color: #10b981; 
+            --incorrect-color: #ef4444; 
+            --timer-color: #fbbf24;
+        }
+
+        * { box-sizing: border-box; }
+        body {font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 40px 5px; user-select: none; -webkit-user-select: none; }
+        
+        /* Adjusted padding to avoid content getting hidden behind the fixed elements */
+        .test-container { background-color: var(--container-bg); max-width: 900px; width: 100%; margin: 0 auto; padding: 140px 20px 180px 20px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5); position: relative; min-height: 100vh; }
+        
+        h1 { text-align: center; font-size: 28px; margin-top: 0; margin-bottom: 5px; }
+        .sub-header { text-align: center; color: #94a3b8; margin-bottom: 20px; font-size: 14px; }
+        
+        .instructions { 
+            background-color: var(--input-bg); 
+            border: 1px solid rgba(56, 189, 248, 0.2); 
+            padding: 25px 20px; 
+            border-radius: 8px; 
+            margin-bottom: 30px; 
+            font-size: 15px; 
+            color: #bae6fd; 
+            line-height: 1.8; 
+            text-align: left; 
+        }
+        .instructions h3 { 
+            margin-top: 0; 
+            color: #38bdf8; 
+            border-bottom: 1px solid rgba(56, 189, 248, 0.2); 
+            padding-bottom: 10px; 
+            margin-bottom: 15px; 
+            font-size: 18px; 
+        }
+        .instructions ul { padding-left: 20px; margin-top: 0; margin-bottom: 25px; }
+        .instructions ul:last-child { margin-bottom: 0; }
+        .instructions li { margin-bottom: 10px; }
+        
+        .reg-group { margin-bottom: 15px; }
+        .reg-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .reg-input { width: 100%; padding: 12px; border-radius: 6px; background-color: var(--input-bg); color: white; border: 1px solid #475569; outline: none; font-size: 16px; }
+        
+        #quiz-section, #loading-spinner, #lockout-screen { display: none; }
+        
+        /* Fixed Header Container for Timer & Palette */
+        .quiz-header-fixed {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 900px;
+            background: rgba(18, 43, 54, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(56, 189, 248, 0.15);
+            padding: 15px 20px 5px 20px;
+            z-index: 100;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .timer-container { text-align: right; font-size: 18px; font-weight: bold; color: var(--timer-color); margin-bottom: 12px; padding: 12px; background: rgba(251, 191, 36, 0.1); border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.3); }
+        .module-section { margin-bottom: 30px; padding: 25px; border-radius: 8px; background: rgba(255, 255, 255, 0.03); border-left: 5px solid var(--mod2-color); }
+        .module-title { font-size: 20px; margin-top: 0; margin-bottom: 20px; }
+        .question-block { margin-bottom: 25px; }
+        .question-text { font-size: 16px; line-height: 1.8; margin-bottom: 12px; overflow: visible; } 
+        
+        .answer-input { width: 100%; padding: 14px; border: 2px solid transparent; border-radius: 6px; background-color: var(--input-bg); color: white; font-size: 16px; outline: none; font-family: monospace; }
+        .answer-input:focus { border-color: #64748b; }
+        
+        .math-preview { display: none; margin-top: 8px; padding: 12px; background: #0f172a; border: 1px dashed #475569; border-radius: 6px; font-size: 18px; color: var(--mod2-color); min-height: 45px; text-align: center; overflow-x: auto; }
+        
+        .feedback { display: none; margin-top: 10px; font-size: 15px; line-height: 1.5; padding: 10px; border-radius: 6px; }
+        .submit-btn { width: 100%; padding: 16px; font-size: 18px; font-weight: bold; color: white; background-color: var(--btn-bg); border: none; border-radius: 8px; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        .submit-btn:hover { background-color: var(--btn-hover); }
+        .submit-btn:disabled { background-color: #64748b; cursor: not-allowed; }
+        
+        .score-display { display: none; text-align: center; font-size: 24px; font-weight: bold; margin-top: 30px; padding: 20px; border-radius: 8px; background: rgba(0,0,0,0.2); }
+        
+        .status-correct .answer-input { border-color: var(--correct-color); background-color: rgba(34, 197, 94, 0.1); }
+        .status-correct .feedback { display: block; color: var(--correct-color); background: rgba(34, 197, 94, 0.05); }
+        
+        .status-incorrect .answer-input { border-color: var(--incorrect-color); background-color: rgba(239, 68, 68, 0.1); }
+        .status-incorrect .feedback { display: block; color: var(--incorrect-color); background: rgba(239, 68, 68, 0.05); }
+        
+        .loading-text { text-align: center; color: #38bdf8; font-weight: bold; margin-top: 20px;}
+        .lockout-msg { text-align: center; color: var(--incorrect-color); font-size: 18px; font-weight: bold; padding: 40px 20px; }
+
+        .palette-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+            justify-content: center;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(56, 189, 248, 0.1);
+        }
+        .palette-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 6px;
+            border: 2px solid #475569;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .palette-btn.unanswered { background-color: #334155; color: #94a3b8; border-color: #475569; }
+        .palette-btn.answered { background-color: rgba(16, 185, 129, 0.15); border-color: var(--correct-color); color: #fff; }
+        .palette-btn.review { background-color: rgba(251, 191, 36, 0.15); border-color: var(--timer-color); color: #fff; }
+        .palette-btn.active { transform: scale(1.1); border-color: var(--btn-bg); box-shadow: 0 0 10px var(--btn-bg); }
+        
+        /* Fixed Footer Container for Navigation & Submission Controls */
+        .quiz-footer-fixed {
+            position: fixed;
+            bottom: 0; 
+            left: 50%;
+            transform: translateX(-50%);  
+             width: 100%;
+             max-width: 900px;
+            background: rgba(18, 43, 54, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(56, 189, 248, 0.15);
+            padding: 15px 20px 20px 20px;
+            z-index: 100;
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .nav-btn {
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            transition: 0.2s;
+        }
+        .nav-btn:hover:not(:disabled) { background-color: #244859; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .review-toggle-btn { background-color: rgba(251, 191, 36, 0.08); border: 1px solid rgba(251, 191, 36, 0.3); color: var(--timer-color); }
+        .review-toggle-btn.active-review { background-color: var(--timer-color); color: #081c24; }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(8, 28, 36, 0.96);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-card {
+            background-color: var(--container-bg);
+            border: 2px solid rgba(56, 189, 248, 0.3);
+            border-radius: 12px;
+            max-width: 550px;
+            width: 100%;
+            padding: 35px 25px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            text-align: center;
+        }
+        .modal-title-warn {
+            color: var(--timer-color);
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .modal-title-danger {
+            color: var(--incorrect-color);
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        .modal-text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text-color);
+            margin-bottom: 25px;
+        }
+        .modal-btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .modal-btn {
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+        }     
+        .modal-btn-confirm { background-color: var(--btn-bg); color: white; }
+        .modal-btn-confirm:hover { background-color: var(--btn-hover); }
+        .modal-btn-cancel { background-color: #334155; color: #94a3b8; }
+        .modal-btn-cancel:hover { background-color: #475569; }
+        .modal-btn-danger { background-color: var(--incorrect-color); color: white; }
+        .modal-btn-danger:hover { opacity: 0.9; }
+
+        @media (max-width: 600px) {
+            body { padding: 10px 0px; } 
+            .test-container { padding: 160px 8px 210px 8px; border-radius: 8px; } 
+            h1 { font-size: 24px; }
+            .module-section { padding: 15px; border-left-width: 4px; }
+            .timer-container { text-align: center; font-size: 16px; }
+            .answer-input, .reg-input { font-size: 16px; padding: 12px; }
+            .nav-btn { padding: 10px 14px; font-size: 14px; }
+            .quiz-header-fixed { border-radius: 0; padding: 10px 10px 5px 10px; }
+            .quiz-footer-fixed { border-radius: 0; padding: 10px 10px 15px 10px; }
+        }
+    </style>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
+</head>
+<body>
+
+<div id="fullscreen-notice-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+        <h3 class="modal-title-warn">⚠️ STRICT FULLSCREEN SECURITY MODE</h3>
+        <p class="modal-text">
+            This examination utilizes strict server-side integrity controls.<br><br>
+            Clicking the button below will securely configure your viewport to <strong>Fullscreen Mode</strong>. Hitting <code>Esc</code>, minimizing, or adjusting browser bounds will trigger immediate penalties. You are permitted exactly <strong>2 escape warning strikes</strong> before the portal automatically files an absolute test cancellation and submittal.
+        </p>
+        <button type="button" class="modal-btn modal-btn-confirm" onclick="acceptFullscreenAndStart()">Acknowledge & Launch Assessment</button>
+    </div>
+</div>
+
+<div id="fullscreen-lockout-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+        <h3 class="modal-title-danger">🚨 INTEGRITY VIOLATION LOGGED</h3>
+        <p class="modal-text" id="fullscreen-warn-text">
+            Fullscreen Mode Escape Detected!<br><br>
+            Your browser access has been temporarily suspended. You must click the button below to re-establish a secure fullscreen environment. Attempting another escape will result in an immediate penalty or automatic submission.
+        </p>
+        <button type="button" class="modal-btn modal-btn-danger" onclick="reEngageFullscreenLock()">Re-Lock Fullscreen Mode</button>
+    </div>
+</div>
+
+<div id="submit-confirm-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-card">
+        <h3 class="modal-title-warn">📝 CONFIRM ASSESSMENT SUBMISSION</h3>
+        <p class="modal-text">
+            Are you absolutely certain you want to finalize and submit your answers?<br><br>
+            Verify your completed palette markers. Once finalized, input fields lock permanently, grading routines calculate, and results are piped to the master Google Sheets ledger. This action cannot be revoked.
+        </p>
+        <div class="modal-btn-group">
+            <button type="button" class="modal-btn modal-btn-cancel" onclick="closeSubmitConfirmation()">Return to Test</button>
+            <button type="button" class="modal-btn modal-btn-confirm" onclick="confirmFinalEvaluation()">Yes, Submit Exam</button>
+        </div>
+    </div>
+</div>
+
+<div class="test-container" id="main-test-element">
+    <h1>Online Assessment-1</h1>
+    <div class="sub-header" id="score-header">Total Marks: --</div>
+
+    <div id="lockout-screen" class="lockout-msg">
+        🔒 Access Denied.<br><br><span style="font-size:16px; font-weight:normal; color:#94a3b8;">Our records show that this account has already submitted an assessment.</span>
+    </div>
+
+    <div id="registration-section">
+        <h2 style="text-align: center; color: #94a3b8; margin-top: 0;">Student Details</h2>
+
+        <div class="reg-group"><label>Full Name</label><input type="text" id="reg-name" class="reg-input" placeholder="e.g., Rakesh Bharati" required></div>
+        <div class="reg-group"><label>Email Address</label><input type="email" id="reg-email" class="reg-input" placeholder="Enter your institution email" required></div>
+        <div class="reg-group"><label>USN</label><input type="text" id="reg-usn" class="reg-input" placeholder="Enter your USN" required></div>
+        <div class="reg-group"><label>Branch & Section</label><input type="text" id="reg-section" class="reg-input" placeholder="e.g., CSE 99" required></div>
+        <div class="reg-group"><label>Roll Number</label><input type="text" id="reg-roll" class="reg-input" placeholder="Enter your Roll Number" required></div>
+        <div class="reg-group"><label>Secret Password</label><input type="password" id="reg-password" class="reg-input" placeholder="Create or enter your password" required></div>
+
+        <div class="instructions" style="text-align: left;">
+            <h3 style="margin-top: 0; color: #7dd3fc; border-bottom: 1px solid rgba(56, 189, 248, 0.3); padding-bottom: 8px; font-size: 16px;">⚠️ Assessment Rules</h3>
+            <ul style="padding-left: 20px; margin-bottom: 20px;">
+               <li><strong>Time Limit:</strong> You have exactly <strong id="rule-time-display">-- minutes</strong> to complete this test. It will submit automatically when time is up.</li>
+                <li><strong>Academic Integrity:</strong> You must solve these questions independently. The use of AI, external websites, or unauthorized tools is strictly prohibited.</li>
+                <li><strong>Anti-Cheating Active:</strong> Do NOT switch browser tabs or leave this window. The system monitors tab activity and will force a submission if you leave the page.</li>
+                <li><strong>Fullscreen Enforcement:</strong> The test runs in a dedicated fullscreen environment. Escape detection parameters allow exactly two warning strikes before immediate server submittal.</li>
+                <li><strong>Single Attempt:</strong> You may only submit this assessment once.</li>
+            </ul>
+
+            <h3 style="color: #7dd3fc; border-bottom: 1px solid rgba(56, 189, 248, 0.3); padding-bottom: 8px; font-size: 16px;">📝 How to type mathematical answers</h3>
+            <ul style="padding-left: 20px; margin-bottom: 0;">
+                <li><strong>Basic Math:</strong> Use <code>^</code> for powers (e.g., <code>x^2</code>), <code>*</code> for multiplication (e.g., <code>2*x</code>), and <code>/</code> for division.</li>
+                <li><strong>Trigonometry:</strong> You MUST use parentheses! Type <code>sin(x)</code>, <code>cos(x)</code>, <code>tan(x)</code> (<strong>not</strong> <code>sin x</code>).</li>
+                <li><strong>Logarithms:</strong> Type <code>log(x)</code> or <code>ln(x)</code>.</li>
+                <li><strong>Exponentials:</strong> Type <code>exp(x)</code> or <code>e^x</code>.</li>
+                <li><strong>Constants:</strong> Type <code>pi</code> for \(\pi\).</li>
+            </ul>
+        </div>
+
+        <div id="reg-error" style="color: #ef4444; text-align: center; margin-bottom: 15px; font-weight: bold; display: none;"></div>
+        
+        <div style="display: flex; gap: 10px;">
+            <button type="button" id="start-btn" class="submit-btn" onclick="startTest()" style="background-color: #3b82f6;">Start Test</button>
+            <button type="button" id="dev-bypass-btn" class="submit-btn" onclick="launchDeveloperPreview()" style="background-color: #64748b;">Developer Bypass</button>
+        </div>
+    </div>
+
+    <div id="quiz-section">
+        <div class="quiz-header-fixed">
+           <div class="timer-container">⏱️ Time Remaining: <span id="time-display">00:00</span></div>
+            <div class="palette-container" id="question-palette-placeholder"></div>
+        </div>
+        
+        <form id="assessment-form"></form>
+
+        <div class="quiz-footer-fixed">
+            <div id="pagination-menu-placeholder"></div>
+            <button type="button" class="submit-btn" id="final-submit-btn" onclick="showSubmitConfirmation()">Submit Assessment</button>
+        </div>
+        
+        <div id="loading-spinner" class="loading-text" style="margin-bottom: 40px;">Saving your results & sending email... Please wait.</div>
+        
+        <div id="final-score" class="score-display" style="margin-bottom: 40px;"></div>
+    </div>
+</div>
+
+<script>
+    // =========================================================================
+    // GLOBAL CONFIGURATION MATRIX (EASILY UPDATE EXAM PARAMS HERE)
+    // =========================================================================
+    const EXAM_DURATION_MINUTES = 1; // Just update this single number to re-scale the assessment duration!
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwAPR-oEm_TgK3LrI5cBWyuWaeML-vpMUpI_Zr08W_PP5kkMVAf31TIp29AhpF7B-Fz/exec"; 
+     
+    // =========================================================================
+    // THE 12-QUESTION BANK (4 Marks Each) = 48 Total Marks
+    // =========================================================================
+    const QUESTION_BANK = [
+      {
+        module: "Module 2: Higher Order ODEs",
+        question: "Find the Complementary Function (C.F.) of the ordinary differential equation:<br>$$\\frac{d^{2}y}{dx^{2}}-5\\frac{dy}{dx}+6y=0$$",
+        placeholder: "e.g., c1*exp(7*x)+c2*cos(3*x)",
+        type: "math",
+        vars: ["x", "c1", "c2"],
+        answer: "c1*exp(2*x)+c2*exp(3*x)",
+        marks: 4,
+        explanation: "<b>Step 1: Write the Auxiliary Equation</b><br>Replace $\\frac{d^2y}{dx^2}$ with $m^2$, $\\frac{dy}{dx}$ with $m$, and $y$ with $1$ to form the characteristic polynomial:<br>$$m^{2}-5m+6=0$$<br><b>Step 2: Factor and Find Roots</b><br>Factoring the quadratic polynomial yields:<br>$$(m-2)(m-3)=0$$<br>This gives two real, distinct roots: $m_{1}=2$ and $m_{2}=3$.<br><br><b>Step 3: Construct the Complementary Function (C.F.)</b><br>For real and distinct roots, the general solution template is $y_c = c_1e^{m_1x} + c_2e^{m_2x}$. Substituting our roots yields:<br>$$y_{c}=c_{1}e^{2x}+c_{2}e^{3x}$$"
+      },
+      {
+        module: "Module 2: Higher Order ODEs",
+        question: "Find the Complementary Function (C.F.) of the differential equation:<br>$$\\frac{d^{2}y}{dx^{2}}+6\\frac{dy}{dx}+9y=0$$",
+        placeholder: "e.g., (c1+c2*x+c3*x)*exp(9*x)",
+        type: "math",
+        vars: ["x", "c1", "c2"],
+        answer: "(c1+c2*x)*exp(-3*x)",
+        marks: 4,
+        explanation: "<b>Step 1: Form the Auxiliary Equation</b><br>Set up the auxiliary algebraic statement:<br>$$m^{2}+6m+9=0$$<br><b>Step 2: Solve for Roots</b><br>Recognize the left side as a perfect square trinomial:<br>$$(m+3)^{2}=0$$<br>The roots are real and repeated: $m = -3, -3$.<br><br><b>Step 3: Apply the Repeated Roots Formula</b><br>When roots are real and repeated ($m_1 = m_2 = m$), the template is $y_c = (c_1 + c_2x)e^{mx}$. Applying our root:<br>$$y_{c}=(c_{1}+c_{2}x)e^{-3x}$$"
+      },
+      {
+        module: "Module 2: Higher Order ODEs",
+        question: "Find the Particular Integral (P.I.) for the case of failure in the differential equation:<br>$$(D^{2}-4D+3)y=e^{3x}$$",
+        placeholder: "e.g., (x/3)*exp(2*x)",
+        type: "math",
+        vars: ["x"],
+        answer: "(x/2)*exp(3*x)",
+        marks: 4,
+        explanation: "<b>Step 1: Express in Inverse Operator Form</b><br>Write the Particular Integral using the inverse operator framework:<br>$$P.I. = \\frac{1}{D^{2}-4D+3}e^{3x} = \\frac{1}{(D-3)(D-1)}e^{3x}$$<br><b>Step 2: Identify Case of Failure</b><br>Substituting $D = 3$ directly into the denominator yields $\\frac{1}{(3-3)(3-1)} = \\frac{1}{0}$, which indicates a standard shifting rule case of failure.<br><br><b>Step 3: Apply the Derivative Shifting Rule</b><br>Multiply by $x$ and differentiate the denominator with respect to $D$:<br>$$P.I. = x \\cdot \\frac{1}{\\frac{d}{dD}(D^2-4D+3)}e^{3x} = x \\cdot \\frac{1}{2D-4}e^{3x}$$<br>Substitute $D = 3$ safely into this new non-zero operator denominator:<br>$$P.I. = x \\cdot \\frac{e^{3x}}{2(3)-4} = \\frac{xe^{3x}}{2}$$"
+      },
+      {
+        module: "Module 2: Higher Order ODEs",
+        question: "Find the Particular Integral (P.I.) for the differential equation:<br>$$(D^{2}-2D+1)y=4e^{x}$$",
+        placeholder: "e.g., 9*x^9*exp(9*x)",
+        type: "math",
+        vars: ["x"],
+        answer: "2*x^2*exp(x)",
+        marks: 4,
+        explanation: "<b>Step 1: Write in Operator Form</b><br>Express the differential equation using its factored operator base:<br>$$P.I. = \\frac{1}{(D-1)^{2}}(4e^{x})$$<br><b>Step 2: Apply the Extension Rule for Failure</b><br>Substituting $D = 1$ causes the entire quadratic operator base to fall to zero. Since $D = 1$ is a double root (multiplicity $r = 2$), we apply the analytical extension formula $\\frac{1}{(D-a)^r}e^{ax} = \\frac{x^r}{r!}e^{ax}$:<br>$$P.I. = 4 \\cdot \\frac{x^{2}}{2!}e^{x} = 2x^{2}e^{x}$$"
+      },
+      {
+        module: "Module 2: Higher Order ODEs",
+        question: "Find the Particular Integral (P.I.) for the differential equation:<br>$$(D^{2}+9)y=\\cos(2x)$$",
+        placeholder: "e.g., sin(5*x)/99",
+        type: "math",
+        vars: ["x"],
+        answer: "cos(2*x)/5",
+        marks: 4,
+        explanation: "<b>Step 1: Formulate the Inverse Sinusoidal Operator</b><br>Set up the standard inverse operation for trigonometric targets:<br>$$P.I. = \\frac{1}{D^{2}+9}\\cos(2x)$$<br><b>Step 2: Substitute $D^2 = -a^2$</b><br>For terms containing $\\cos(ax+b)$ or $\\sin(ax+b)$, replace $D^2$ directly with $-a^2$. Here, $a = 2$, so we plug in $D^2 = -(2)^2 = -4$:<br>$$P.I. = \\frac{1}{-4+9}\\cos(2x) = \\frac{\\cos(2x)}{5}$$"
+      },
+      {
+        module: "Module 2: Higher Order ODEs",
+        question: "Find the Particular Integral (P.I.) for the differential equation with a polynomial input:<br>$$(D^{2}+3D+2)y=4x^{2}$$",
+        placeholder: "e.g., 2*x^3+2*x+2",
+        type: "math",
+        vars: ["x"],
+        answer: "2*x^2-6*x+7",
+        marks: 4,
+        explanation: "<b>Step 1: Structure for Binomial Expansion</b><br>Isolate the lowest degree constant term from the operator denominator to build a power series structure:<br>$$P.I. = \\frac{1}{2\\left(1 + \\frac{3D}{2} + \\frac{D^2}{2}\\right)}(4x^2) = 2 \\left[1 + \\left(\\frac{3D}{2} + \\frac{D^2}{2}\\right)\\right]^{-1}(x^2)$$<br><b>Step 2: Expand Using Binomial Series</b><br>Expand $[1 + u]^{-1} = 1 - u + u^2 - \\dots$ keeping operators only up to $D^2$ since higher derivatives of $x^2$ vanish:<br>$$2\\left[1 - \\frac{3}{2}D + \\frac{7}{4}D^2\\right](x^2)$$<br><b>Step 3: Evaluate the Differential Operators</b><br>Apply the explicit derivative conditions ($D(x^2) = 2x$ and $D^2(x^2) = 2$):<br>$$P.I. = 2\\left[x^2 - \\frac{3}{2}(2x) + \\frac{7}{4}(2)\\right] = 2x^2 - 6x + 7$$"
+      },
+      {
+        module: "Module 2: Higher Order ODEs",
+        question: "Find the Particular Integral (P.I.) for the linear differential operator system:<br>$$(D^{2}-D)y=x$$",
+        placeholder: "e.g., -x^3/3+3x",
+        type: "math",
+        vars: ["x"],
+        answer: "-x^2/2-x", 
+        marks: 4,
+        explanation: "<b>Step 1: Extract the Lowest Degree Operator</b><br>Factor out $-D$ from the denominator to create an evaluable series base:<br>$$P.I. = \\frac{1}{-D(1-D)}x = -\\frac{1}{D}(1-D)^{-1}x$$<br><b>Step 2: Expand the Operator Polynomial</b><br>Using the classic geometric power expansion series $(1-D)^{-1} = 1 + D + D^2 + \\dots$:<br>$$P.I. = -\\frac{1}{D}[1 + D](x) = -\\frac{1}{D}[x + 1]$$<br><b>Step 3: Evaluate the Integration Operator</b><br>The operator $\\frac{1}{D}$ denotes a direct indefinite integration with respect to $x$:<br>$$P.I. = -\\int(x+1)dx = -\\left(\\frac{x^2}{2} + x\\right) = -\\frac{x^2}{2} - x$$"
+      },
+      {
+        module: "Module 2: Higher Order ODEs",
+        question: "Find the exact numerical value of the Wronskian $W$ for the differential equation solved by the variation of parameters method using its fundamental solutions $y_1$ and $y_2$:<br>$$\\frac{d^{2}y}{dx^{2}}+y=\\tan(x)$$",
+        placeholder: "Type exact number...",
+        type: "exact",
+        vars: [],
+        answer: "1",
+        marks: 4,
+        explanation: "<b>Step 1: Identify the Fundamental Solution Set</b><br>The underlying homogeneous system is $\\frac{d^2y}{dx^2} + y = 0$, giving an auxiliary layout of $m^2+1=0 \\rightarrow m = \\pm i$. This provides the fundamental solutions:<br>$$y_1 = \\cos(x), \\quad y_2 = \\sin(x)$$<br><b>Step 2: Apply the Wronskian Determinant Formula</b><br>The Wronskian configuration is calculated as follows:<br>$$W = y_1y_2' - y_2y_1'$$<br>Differentiating the functions yields $y_1' = -\\sin(x)$ and $y_2' = \\cos(x)$. Substituting these terms:<br>$$W = (\\cos(x))(\\cos(x)) - (\\sin(x))(-\\sin(x)) = \\cos^2(x) + \\sin^2(x) = 1$$"
+      },
+      {
+        module: "Module 2: Higher Order ODEs",
+        question: "When solving the differential equation $y'' - 6y' + 9y = \\frac{e^{3x}}{x^2}$ via the method of Variation of Parameters, the homogeneous solution yields $C.F. = c_1y_1 + c_2y_2$. If the particular solution is structured as $P.I. = uy_1 + vy_2$ and the first parameter evaluates as $u = -\\ln|x|$, find the second functional multiplier parameter value $v$.",
+        placeholder: "e.g., -1/sin(x)",
+        type: "math",
+        vars: ["x"],
+        answer: "-1/x",
+        marks: 4,
+        explanation: "<b>Step 1: Identify Components and the Wronskian</b><br>The auxiliary system $(m-3)^2 = 0$ yields repeated roots, so $y_1 = e^{3x}$ and $y_2 = xe^{3x}$.<br>The Wronskian $W = y_1y_2' - y_2y_1'$ calculates to:<br>$$W = e^{3x}(e^{3x} + 3xe^{3x}) - xe^{3x}(3e^{3x}) = e^{6x}$$<br>The non-homogeneous driving function is $R(x) = \\frac{e^{3x}}{x^2}$.<br><br><b>Step 2: Apply the Variation of Parameters Formula for $v$</b><br>The formula for computing the tracking variable $v$ is defined as:<br>$$v = \\int \\frac{y_1 R(x)}{W} dx$$<br>Substituting our variables into the integral:<br>$$v = \\int \\frac{e^{3x} \\cdot \\left(\\frac{e^{3x}}{x^2}\\right)}{e^{6x}} dx = \\int \\frac{e^{6x}}{x^2 \\cdot e^{6x}} dx = \\int \\frac{1}{x^2} dx = -\\frac{1}{x}$$"
+      },
+      {
+        module: "Module 2: Higher Order ODEs",
+        question: "Find the Particular Integral (P.I.) for the Cauchy-Euler equation:<br>$$x^{2}\\frac{d^{2}y}{dx^{2}}-3x\\frac{dy}{dx}+3y=x^{2}$$",
+        placeholder: "e.g., -2x^9",
+        type: "math",
+        vars: ["x"],
+        answer: "-x^2",
+        marks: 4,
+        explanation: "<b>Step 1: Substitute Independent Variables</b><br>Transform the Cauchy system using $x = e^t$, which equates to $t = \\ln(x)$. The differential operators shift to:<br>$$x\\frac{dy}{dx} = Dy, \\quad x^2\\frac{d^2y}{dx^2} = D(D-1)y$$<br>Substituting these operators and replacing $x^2$ with $e^{2t}$ gives:<br>$$[D(D-1) - 3D + 3]y = e^{2t} \\implies (D^2 - 4D + 3)y = e^{2t}$$<br><b>Step 2: Solve the Transformed Operator System</b><br>Set up the inverse linear constant shift operation:<br>$$P.I. = \\frac{1}{D^2 - 4D + 3}e^{2t}$$<br>Substitute $D = 2$ directly into the algebraic polynomial base:<br>$$P.I. = \\frac{1}{(2)^2 - 4(2) + 3}e^{2t} = \\frac{1}{4 - 8 + 3}e^{2t} = \\frac{1}{-1}e^{2t} = -e^{2t}$$<br><b>Step 3: Revert Back to Original Variable $x$</b><br>Substitute $e^{2t} = x^2$ to return to the original variable domain:<br>$$P.I. = -x^2$$"
+      },
+      {
+        module: "Module 2: Higher Order ODEs",
+        question: "Find the Particular Integral (P.I.) for the Legendre differential equation:<br>$$(1+x)^{2}\\frac{d^{2}y}{dx^{2}}-4(1+x)\\frac{dy}{dx}+6y=(1+x)^{3}$$",
+        placeholder: "e.g., (1+5x)^3*log(10+99x)",
+        type: "math",
+        vars: ["x"],
+        answer: "(1+x)^3*log(1+x)",
+        marks: 4,
+        explanation: "<b>Step 1: Convert Using Legendre Substitutions</b><br>Apply the coordinate transformation $(1+x) = e^t$, meaning $t = \\ln(1+x)$. The operators transform as follows:<br>$$(1+x)\\frac{dy}{dx} = Dy, \\quad (1+x)^2\\frac{d^2y}{dx^2} = D(D-1)y$$<br>Rewriting the equation with the exponential driving function ($e^{3t}$) yields:<br>$$[D(D-1) - 4D + 6]y = e^{3t} \\implies (D^2 - 5D + 6)y = e^{3t}$$<br><b>Step 2: Solve Using Shifting Failure Operations</b><br>Set up the inverse operator expression:<br>$$P.I. = \\frac{1}{(D-3)(D-2)}e^{3t}$$<br>Substituting $D = 3$ makes the factor $(D-3)$ zero. Evaluate the non-zero factor at $D = 3$ first:<br>$$P.I. = \\frac{1}{3-2} \\cdot \\frac{1}{D-3}e^{3t} = \\frac{1}{D-3}e^{3t}$$<br>Applying the standard case of failure shifting rules yields: $t \\cdot e^{3t}$.<br><br><b>Step 3: Convert Back to the $x$ Variable Domain</b><br>Replace $t$ with $\\ln(1+x)$ and $e^{3t}$ with $(1+x)^3$ to find the final layout expression:<br>$$P.I. = (1+x)^3\\ln(1+x)$$"
+      },
+      {
+        module: "Module 2: Higher Order ODEs",
+        question: "Find the Particular Integral (P.I.) for the Legendre linear differential equation:<br>$$(1+x)^{2}\\frac{d^{2}y}{dx^{2}}+(1+x)\\frac{dy}{dx}+y=4\\sin(\\ln(1+x))$$",
+        placeholder: "e.g., 4*log(x)*5+3*sin(log(x))",
+        type: "math",
+        vars: ["x"],
+        answer: "-2*log(1+x)*cos(log(1+x))",
+        marks: 4,
+        explanation: "<b>Step 1: Convert Using Legendre Substitutions</b><br>Transform the coordinate framework by setting $(1+x) = e^t$, which means $t = \\ln(1+x)$. The corresponding constant coefficient operators map as follows:<br>$$(1+x)\\frac{dy}{dx} = Dy, \\quad (1+x)^2\\frac{d^2y}{dx^2} = D(D-1)y$$<br>Substituting these operational definitions and rewriting the right-hand driving function yields:<br>$$[D(D-1) + D + 1]y = 4\\sin(t) \\implies (D^2 + 1)y = 4\\sin(t)$$<br><b>Step 2: Solve for the Particular Integral (Case of Failure)</b><br>Set up the inverse operator expression in the transformed $t$-domain:<br>$$P.I. = \\frac{1}{D^2 + 1}(4\\sin(t))$$<br>Substituting $D^2 = -a^2 = -1^2 = -1$ yields a denominator of zero, indicating a standard sinusoidal case of failure. Applying the derivative extension rule (or the classic identity $\\frac{1}{D^2+a^2}\\sin(at) = -\\frac{t}{2a}\\cos(at)$) gives:<br>$$P.I. = 4 \\cdot \\left( -\\frac{t}{2(1)}\\cos(t) \\right) = -2t\\cos(t)$$<br><b>Step 3: Revert Back to the Original Variable Domain ($x$)</b><br>Substitute $t = \\ln(1+x)$ back into the expression to yield your final textbook-style answer:<br>$$P.I. = -2\\ln(1+x)\\cos(\\ln(1+x))$$"
+      }
+    ];
+    // =========================================================================
+
+    let studentDetails = {};
+    let timerInterval; 
+    let testActive = false;
+    let tabSwitchCount = 0;
+    let fullscreenExitCount = 0; // Tracks strict fullscreen breakout attempts
+    let testEndTime = 0;
+    let totalMaxScore = 0;
+    let currentQuestionIndex = 0;
+    let markedForReview = {};
+    
+    let cachedServerResponseData = null;
+    let cachedStudentRegistrationPackage = null;
+
+    function safeStorageSet(key, value) { try { localStorage.setItem(key, value); } catch(e) {} }
+    function safeStorageGet(key) { try { return localStorage.getItem(key); } catch(e) { return null; } }
+    function safeStorageClear() { try { localStorage.clear(); } catch(e) {} }
+
+    function initializeQuiz() {
+        let formContainer = document.getElementById('assessment-form');
+        let html = "";
+        totalMaxScore = 0;
+
+        let paletteHtml = `<div class="palette-container" id="question-palette">`;
+        QUESTION_BANK.forEach((q, index) => {
+            paletteHtml += `<button type="button" class="palette-btn unanswered" id="palette-btn-${index}" onclick="jumpToQuestion(${index})">${index + 1}</button>`;
+        });
+        paletteHtml += `</div>`;
+
+        QUESTION_BANK.forEach((q, index) => {
+            let qId = "q" + (index + 1);
+            totalMaxScore += q.marks;
+
+            html += `
+                <div class="question-pane" id="pane-${index}" style="display: none;">
+                    <div class="module-section">
+                        <h2 class="module-title">${q.module}</h2>
+                        <div class="question-block" id="${qId}-container">
+                            <div class="question-text"><strong>Q${index + 1}.</strong> ${q.question}</div>
+                            <input type="text" class="answer-input" id="${qId}" placeholder="${q.placeholder || ''}" oninput="updatePreview('${qId}', ${index})">
+                            <div class="math-preview" id="${qId}-preview"></div>
+                            <div class="feedback" id="${qId}-feedback"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        formContainer.innerHTML = html;
+        
+        document.getElementById('question-palette-placeholder').innerHTML = paletteHtml;
+        document.getElementById('pagination-menu-placeholder').innerHTML = `
+            <div class="nav-controls" id="pagination-menu">
+                <button type="button" class="nav-btn" id="prev-btn" onclick="navigateQuestion(-1)">← Previous</button>
+                <button type="button" class="nav-btn review-toggle-btn" id="review-btn" onclick="toggleReviewFlag()">⭐ Mark for Review</button>
+                <button type="button" class="nav-btn" id="next-btn" onclick="navigateQuestion(1)">Next →</button>
+            </div>
+        `;
+        
+        document.getElementById('score-header').innerText = `Total Marks: ${totalMaxScore} (${QUESTION_BANK.length} Questions)`;
+        
+        // Dynamically parse text settings to reflect central timing variables
+        document.getElementById('rule-time-display').innerText = `${EXAM_DURATION_MINUTES} minutes`;
+        const displayMinStr = EXAM_DURATION_MINUTES < 10 ? "0" + EXAM_DURATION_MINUTES : EXAM_DURATION_MINUTES;
+        document.getElementById('time-display').textContent = displayMinStr + ":00";
+    }
+
+    document.addEventListener("DOMContentLoaded", initializeQuiz);
+
+    function showQuestion(index) {
+        if (index < 0 || index >= QUESTION_BANK.length) return;
+        
+        let oldPane = document.getElementById(`pane-${currentQuestionIndex}`);
+        if (oldPane) oldPane.style.display = 'none';
+        let oldBtn = document.getElementById(`palette-btn-${currentQuestionIndex}`);
+        if (oldBtn) oldBtn.classList.remove('active');
+
+        currentQuestionIndex = index;
+
+        let newPane = document.getElementById(`pane-${currentQuestionIndex}`);
+        if (newPane) newPane.style.display = 'block';
+        let newBtn = document.getElementById(`palette-btn-${currentQuestionIndex}`);
+        if (newBtn) newBtn.classList.add('active');
+
+        document.getElementById('prev-btn').disabled = (currentQuestionIndex === 0);
+        
+        let nextBtn = document.getElementById('next-btn');
+        if (currentQuestionIndex === QUESTION_BANK.length - 1) {
+            nextBtn.innerText = "Final Question Panel";
+            nextBtn.disabled = true;
+        } else {
+            nextBtn.innerText = "Next →";
+            nextBtn.disabled = false;
+        }
+
+        let reviewBtn = document.getElementById('review-btn');
+        if (markedForReview[currentQuestionIndex]) {
+            reviewBtn.classList.add('active-review');
+            reviewBtn.innerText = "★ Marked for Review";
+        } else {
+            reviewBtn.classList.remove('active-review');
+            reviewBtn.innerText = "⭐ Mark for Review";
+        }
+
+        MathJax.typesetPromise([newPane]).catch(e => {});
+    }
+
+    function navigateQuestion(direction) {
+        navigateQuestionIndex(currentQuestionIndex + direction);
+    }
+
+    function navigateQuestionIndex(targetIndex) {
+        if (targetIndex >= 0 && targetIndex < QUESTION_BANK.length) {
+            showQuestion(targetIndex);
+        }
+    }
+
+    function jumpToQuestion(index) {
+        showQuestion(index);
+    }
+
+    function toggleReviewFlag() {
+        markedForReview[currentQuestionIndex] = !markedForReview[currentQuestionIndex];
+        updateQuestionPaletteState(currentQuestionIndex);
+        showQuestion(currentQuestionIndex);
+    }
+
+    function updateQuestionPaletteState(index) {
+        let qId = "q" + (index + 1);
+        let inputField = document.getElementById(qId);
+        let btn = document.getElementById(`palette-btn-${index}`);
+        if (!btn || !inputField) return;
+
+        let val = inputField.value.trim();
+        btn.classList.remove('unanswered', 'answered', 'review');
+
+        if (markedForReview[index]) {
+            btn.classList.add('review');
+        } else if (val !== "") {
+            btn.classList.add('answered');
+        } else {
+            btn.classList.add('unanswered');
+        }
+    }
+
+    function updatePaletteStatusAll() {
+        QUESTION_BANK.forEach((q, i) => {
+            updateQuestionPaletteState(i);
+        });
+    }
+
+   function sanitizeMath(input) {
+    let str = input.toLowerCase();
+    
+    // Equivalence Fix: Map all natural log variants to 'log(' so math.js treats them identically
+    str = str.replace(/ln\s*\(/g, 'log(');
+    
+    str = str.replace(/(\d)([a-z])/g, '$1*$2');
+    str = str.replace(/([a-z0-9])\s*\(/g, '$1*(');
+    const mathFuncs = ['sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'log', 'ln', 'exp', 'sqrt'];
+    mathFuncs.forEach(func => { str = str.split(func + '*(').join(func + '('); });
+    return str;
+}
+
+   function checkMathEquivalence(userStr, correctStr, vars) {
+        try {
+            if(!userStr || userStr.trim() === "") return false;
+            let uStr = sanitizeMath(userStr);
+            let cStr = sanitizeMath(correctStr);
+            
+            // 1. Extract all unique alphanumeric symbols typed by the student
+            let uniqueSymbols = [];
+            try {
+                let node = math.parse(uStr);
+                let symbols = [];
+                node.traverse(function (n) {
+                    if (n.isSymbolNode) symbols.push(n.name);
+                });
+                uniqueSymbols = [...new Set(symbols)];
+            } catch(e) {
+                return false;
+            }
+
+            let exclusions = ['pi', 'e', 'i', 'inf', 'nan', 'true', 'false'];
+            
+            // Identify custom symbols that represent alternative arbitrary constants
+            let customConstants = uniqueSymbols.filter(sym => 
+                !vars.includes(sym) && 
+                !exclusions.includes(sym) &&
+                typeof math[sym] !== 'function'
+            );
+
+            // Isolate the core arbitrary constants expected by the key
+            let targetConstants = vars.filter(v => v === 'c1' || v === 'c2');
+            let missingTargets = targetConstants.filter(t => !uniqueSymbols.includes(t));
+
+            // Run randomized numerical cross-validation loops
+            for(let i=0; i<3; i++) {
+                let scope = {};
+                vars.forEach(v => { scope[v] = Math.random() * 1.5 + 0.1; });
+                
+                let cVal = math.evaluate(cStr, scope);
+                let matchFound = false;
+
+                // Scenario A: Student utilized custom constants (e.g., A and B)
+                if (customConstants.length > 0 && customConstants.length === missingTargets.length) {
+                    if (customConstants.length === 1) {
+                        let testScope = { ...scope };
+                        testScope[customConstants[0]] = scope[missingTargets[0]];
+                        
+                        let uVal = math.evaluate(uStr, testScope);
+                        let diff = Math.abs(uVal - cVal);
+                        if (diff <= 1e-5 || diff / (Math.abs(cVal) + 1e-10) <= 1e-5) matchFound = true;
+                    } 
+                    else if (customConstants.length === 2) {
+                        // Test Permutation 1: Map custom[0] -> c1, custom[1] -> c2
+                        let scope1 = { ...scope };
+                        scope1[customConstants[0]] = scope[missingTargets[0]];
+                        scope1[customConstants[1]] = scope[missingTargets[1]];
+                        let uVal1 = math.evaluate(uStr, scope1);
+                        let diff1 = Math.abs(uVal1 - cVal);
+                        
+                        // Test Permutation 2: Map custom[0] -> c2, custom[1] -> c1
+                        let scope2 = { ...scope };
+                        scope2[customConstants[0]] = scope[missingTargets[1]];
+                        scope2[customConstants[1]] = scope[missingTargets[0]];
+                        let uVal2 = math.evaluate(uStr, scope2);
+                        let diff2 = Math.abs(uVal2 - cVal);
+                        
+                        if ((diff1 <= 1e-5 || diff1 / (Math.abs(cVal) + 1e-10) <= 1e-5) ||
+                            (diff2 <= 1e-5 || diff2 / (Math.abs(cVal) + 1e-10) <= 1e-5)) {
+                            matchFound = true;
+                        }
+                    }
+                } 
+                // Scenario B: Student utilized standard c1/c2 but potentially altered their sequence order
+                else if (customConstants.length === 0) {
+                    let uValNormal = math.evaluate(uStr, scope);
+                    let diffNormal = Math.abs(uValNormal - cVal);
+                    let isMatchNormal = (diffNormal <= 1e-5 || diffNormal / (Math.abs(cVal) + 1e-10) <= 1e-5);
+                    
+                    let isMatchSwapped = false;
+                    if (scope.hasOwnProperty('c1') && scope.hasOwnProperty('c2')) {
+                        let swappedScope = { ...scope };
+                        swappedScope['c1'] = scope['c2'];
+                        swappedScope['c2'] = scope['c1'];
+                        
+                        let uValSwapped = math.evaluate(uStr, swappedScope);
+                        let diffSwapped = Math.abs(uValSwapped - cVal);
+                        isMatchSwapped = (diffSwapped <= 1e-5 || diffSwapped / (Math.abs(cVal) + 1e-10) <= 1e-5);
+                    }
+                    
+                    if (isMatchNormal || isMatchSwapped) matchFound = true;
+                }
+
+                if (!matchFound) return false;
+            }
+            return true;
+        } catch(e) { 
+            return false; 
+        }
+    }
+
+    function updatePreview(qId, index) {
+        let inputVal = document.getElementById(qId).value;
+        safeStorageSet('ans_' + qId, inputVal);
+
+        let qData = QUESTION_BANK[index];
+        if(qData.type !== "math") {
+            updateQuestionPaletteState(index);
+            return;
+        }
+
+        let previewBox = document.getElementById(qId + '-preview');
+        if (inputVal.trim() === "") { 
+            previewBox.style.display = "none"; 
+            updateQuestionPaletteState(index);
+            return; 
+        }
+
+        previewBox.style.display = "block";
+        try {
+            let sanitized = sanitizeMath(inputVal);
+            let node = math.parse(sanitized);
+            previewBox.innerHTML = '\\( ' + node.toTex({parenthesis: 'auto'}) + ' \\)';
+            MathJax.typesetPromise([previewBox]).catch(function (err) { });
+        } catch (e) {
+            previewBox.innerHTML = '<span style="color: #64748b; font-size: 14px;"><i>...</i></span>';
+        }
+        updateQuestionPaletteState(index);
+    }
+
+    document.addEventListener('contextmenu', event => event.preventDefault()); 
+    document.addEventListener('copy', event => event.preventDefault());        
+    document.addEventListener('paste', event => event.preventDefault());       
+    document.addEventListener('cut', event => event.preventDefault());         
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden' && testActive) {
+            tabSwitchCount++;
+            if (tabSwitchCount >= 3) {
+                alert("Security Violation: You have left the test tab too many times. Your test is being automatically submitted.");
+                evaluateTest(); 
+            } else {
+                alert(`WARNING ${tabSwitchCount}/3: Please do not leave this tab during the test.`);
+            }
+        }
+    });
+
+    function handleFullscreenBreakout() {
+        if (testActive && !document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+            fullscreenExitCount++;
+            if (fullscreenExitCount >= 3) { 
+                document.getElementById('fullscreen-lockout-modal').style.display = 'none';
+                alert("Security Violation: You have escaped strict fullscreen mode multiple times. Your exam is now being permanently submitted.");
+                evaluateTest();
+            } else {
+                let warnText = document.getElementById('fullscreen-warn-text');
+                if (warnText) {
+                    warnText.innerHTML = `Fullscreen Mode Escape Detected! This constitutes security warning <strong>Strike ${fullscreenExitCount}/2</strong>.<br><br>Your browser access has been temporarily suspended. You must click the button below to re-establish a secure fullscreen environment. Attempting another escape will result in immediate penalty and automatic submission.`;
+                }
+                document.getElementById('fullscreen-lockout-modal').style.display = 'flex';
+            }
+        }
+    }
+
+    function triggerFullscreenFocus() {
+        let target = document.documentElement;
+        let req = target.requestFullscreen || target.webkitRequestFullscreen || target.mozRequestFullScreen || target.msRequestFullscreen;
+        if (req) {
+            req.call(target).catch(err => {
+                console.log("Fullscreen restriction sandbox entry mapped:", err);
+            });
+        }
+    }
+
+    function reEngageFullscreenLock() {
+        document.getElementById('fullscreen-lockout-modal').style.display = 'none';
+        triggerFullscreenFocus();
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenBreakout);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenBreakout);
+    document.addEventListener('mozfullscreenchange', handleFullscreenBreakout);
+    document.addEventListener('MSFullscreenChange', handleFullscreenBreakout);
+
+    function startTest() {
+        let name = document.getElementById('reg-name').value.trim();
+        let email = document.getElementById('reg-email').value.trim();
+        let usn = document.getElementById('reg-usn').value.trim();
+        let section = document.getElementById('reg-section').value.trim();
+        let roll = document.getElementById('reg-roll').value.trim();
+        let password = document.getElementById('reg-password').value.trim();
+        let errorMsg = document.getElementById('reg-error');
+
+        if(!name || !email || !usn || !section || !roll || !password) {
+            errorMsg.innerText = "⚠️ Please fill in all details before starting."; errorMsg.style.display = "block"; return;
+        }
+        if (!/^[A-Za-z\s]+$/.test(name)) { errorMsg.innerText = "⚠️ Invalid Name: Please use only letters and spaces."; errorMsg.style.display = "block"; return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { errorMsg.innerText = "⚠️ Invalid Email: Please enter a proper email address."; errorMsg.style.display = "block"; return; }
+        if (!/^[A-Za-z0-9]+$/.test(usn)) { errorMsg.innerText = "⚠️ Invalid USN: Please use only a combination of letters and numbers."; errorMsg.style.display = "block"; return; }
+        if (!/^[0-9]+$/.test(roll)) { errorMsg.innerText = "⚠️ Invalid Roll Number: Please enter only numbers."; errorMsg.style.display = "block"; return; }
+
+        errorMsg.style.display = "none"; 
+        let startBtn = document.getElementById('start-btn');
+        startBtn.innerText = "Connecting to Secure Server..."; startBtn.disabled = true; 
+
+        let url = GOOGLE_SHEET_URL + "?usn=" + encodeURIComponent(usn) + "&name=" + encodeURIComponent(name) + "&email=" + encodeURIComponent(email) + "&section=" + encodeURIComponent(section) + "&roll=" + encodeURIComponent(roll) + "&password=" + encodeURIComponent(password);
+
+        fetch(url) 
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === "invalid_credentials") {
+                errorMsg.innerText = "⚠️ Access Denied: Incorrect password for this USN.";
+                errorMsg.style.display = "block";
+                startBtn.innerText = "Start Test";
+                startBtn.disabled = false; 
+                return;
+            }
+            
+            if(data.status === "too_early") {
+                startBtn.innerText = "Waiting for Test...";
+                errorMsg.style.display = "block";
+                errorMsg.style.color = "var(--timer-color)"; 
+                
+                let countdownInterval = setInterval(function() {
+                    let now = Date.now();
+                    let timeUntilStart = data.startTime - now;
+                    
+                    if (timeUntilStart <= 0) {
+                        clearInterval(countdownInterval);
+                        errorMsg.innerText = "✅ The test is now open! Please click 'Start Test' again.";
+                        errorMsg.style.color = "var(--correct-color)";
+                        startBtn.innerText = "Start Test";
+                        startBtn.disabled = false;
+                    } else {
+                        let h = Math.floor((timeUntilStart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        let m = Math.floor((timeUntilStart % (1000 * 60 * 60)) / (1000 * 60));
+                        let s = Math.floor((timeUntilStart % (1000 * 60)) / 1000);
+                        
+                        errorMsg.innerText = `⏳ The test has not started yet.\nOpening in: ${h}h ${m}m ${s}s`;
+                    }
+                }, 1000); 
+                
+                return;
+            }
+            if(data.status === "too_late") {
+                errorMsg.innerText = "⚠️ The test window has closed. You can no longer start this assessment.";
+                errorMsg.style.display = "block";
+                startBtn.innerText = "Start Test";
+                startBtn.disabled = false;
+                return;
+            }
+            
+            if(data.status === "locked") {
+                document.getElementById('registration-section').style.display = 'none';
+                document.getElementById('lockout-screen').style.display = 'block';
+            } else {
+                cachedServerResponseData = data;
+                cachedStudentRegistrationPackage = { name, email, usn, section, roll };
+                startBtn.innerText = "Start Test";
+                startBtn.disabled = false;
+                document.getElementById('fullscreen-notice-modal').style.display = 'flex';
+            }
+        }).catch(error => {
+            errorMsg.innerText = "⚠️ Could not connect. Please check your internet connection."; errorMsg.style.display = "block";
+            startBtn.innerText = "Start Test"; startBtn.disabled = false;
+        });
+    }
+
+    function launchDeveloperPreview() {
+        console.warn("🔧 DEVELOPER PREVIEW ACTIVE: Bypassing server credential verification rules.");
+        cachedStudentRegistrationPackage = {
+            name: "Developer Admin",
+            email: "dev@institution.edu",
+            usn: "DEVMODE001",
+            section: "DEV-X",
+            roll: "999"
+        };
+        cachedServerResponseData = {
+            status: "new",
+            remaining: EXAM_DURATION_MINUTES * 60 * 1000, // Dynamically computed from central variable setup
+            draft: "{}"
+        };
+
+        let noticeModal = document.getElementById('fullscreen-notice-modal');
+        if (noticeModal) noticeModal.style.display = 'none';
+
+        let data = cachedServerResponseData;
+        studentDetails = cachedStudentRegistrationPackage;
+        testEndTime = Date.now() + data.remaining;
+        
+        document.getElementById('registration-section').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        testActive = true;
+        
+        showQuestion(0);
+        updatePaletteStatusAll();
+        startCountdown();
+        
+        alert("🔧 Dev Mode Engaged!\nServer validation bypassed. You can now test typesetting rules, pagination, and color arrays freely.");
+    }
+
+    function acceptFullscreenAndStart() {
+        document.getElementById('fullscreen-notice-modal').style.display = 'none';
+        
+        let data = cachedServerResponseData;
+        studentDetails = cachedStudentRegistrationPackage;
+        testEndTime = Date.now() + data.remaining;
+        
+        document.getElementById('registration-section').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        testActive = true;
+        
+        triggerFullscreenFocus();
+        
+        let cloudDraft = {};
+        try {
+            if (data.draft && typeof data.draft === 'string' && data.draft !== "{}") {
+                cloudDraft = JSON.parse(data.draft);
+            } else if (data.draft && typeof data.draft === 'object') {
+                cloudDraft = data.draft;
+            }
+        } catch(e) { 
+            console.log("Draft load configuration trace anomaly bypassed.", e); 
+        }
+
+        if (cloudDraft["_markedForReview"]) {
+            markedForReview = cloudDraft["_markedForReview"];
+        }
+
+        QUESTION_BANK.forEach((q, i) => {
+            let qId = "q" + (i + 1);
+            let savedVal = cloudDraft[qId] || safeStorageGet('ans_' + qId) || ""; 
+            
+            if (savedVal.trim() !== "") {
+                let box = document.getElementById(qId);
+                if (box) {
+                    box.value = savedVal;
+                    updatePreview(qId, i); 
+                }
+            } 
+        });
+
+        showQuestion(0);
+        updatePaletteStatusAll();
+
+        if(data.status === "resume") { alert("Session Resumed. Your answers and timer have been recovered from the server."); }
+        
+        startCountdown();
+    }
+
+    function showSubmitConfirmation() {
+        if (!testActive) return;
+        document.getElementById('submit-confirm-modal').style.display = 'flex';
+    }
+
+    function closeSubmitConfirmation() {
+        document.getElementById('submit-confirm-modal').style.display = 'none';
+    }
+
+    function confirmFinalEvaluation() {
+        document.getElementById('submit-confirm-modal').style.display = 'none';
+        evaluateTest();
+    }
+
+    function startCountdown() {
+        let display = document.getElementById('time-display');
+        timerInterval = setInterval(function () {
+            let timeRemainingSec = Math.floor((testEndTime - Date.now()) / 1000);
+            if (timeRemainingSec <= 0) {
+                clearInterval(timerInterval);
+                closeSubmitConfirmation();
+                document.getElementById('fullscreen-lockout-modal').style.display = 'none';
+                
+                alert("Time is up! Submitting automatically.");
+                evaluateTest();
+                return;
+            }
+            let m = Math.floor(timeRemainingSec / 60); let s = timeRemainingSec % 60;
+            display.textContent = (m < 10 ? "0" : "") + m + ":" + (s < 10 ? "0" : "") + s;
+            if(timeRemainingSec < 300) { display.parentElement.style.color = "var(--incorrect-color)"; }
+        }, 1000);
+    }
+
+    function evaluateTest() {
+        let formSection = document.getElementById('quiz-section');
+        if (formSection && !testActive && formSection.style.display === 'block' && document.getElementById('final-score').style.display === 'block') return;
+
+        testActive = false; clearInterval(timerInterval); 
+        
+        let exitReq = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+        if (exitReq && (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)) {
+            exitReq.call(document).catch(e => {});
+        }
+        
+        let fixedHeader = document.querySelector('.quiz-header-fixed');
+        if (fixedHeader) fixedHeader.style.position = 'static';
+        let fixedFooter = document.querySelector('.quiz-footer-fixed');
+        if (fixedFooter) fixedFooter.style.position = 'static';
+        
+        let containerWrap = document.getElementById('main-test-element');
+        if (containerWrap) containerWrap.style.padding = '20px';
+
+        QUESTION_BANK.forEach((q, i) => {
+            let pane = document.getElementById(`pane-${i}`);
+            if (pane) pane.style.display = 'block';
+        });
+        let navContainer = document.getElementById('pagination-menu');
+        if (navContainer) navContainer.style.display = 'none';
+        let paletteGrid = document.getElementById('question-palette');
+        if (paletteGrid) paletteGrid.style.display = 'none';
+        
+        // Dynamically track elapsed timeline metric using the configuration constant limits
+        let totalElapsedSec = Math.floor(((EXAM_DURATION_MINUTES * 60 * 1000) - (testEndTime - Date.now())) / 1000);
+        if(totalElapsedSec < 0) totalElapsedSec = 0; 
+        if(totalElapsedSec > (EXAM_DURATION_MINUTES * 60)) totalElapsedSec = EXAM_DURATION_MINUTES * 60;
+
+        let formattedTimeTaken = Math.floor(totalElapsedSec / 60) + "m " + (totalElapsedSec % 60) + "s";
+        
+        let totalScore = 0;
+        let summaryReport = "";
+
+        document.getElementById('final-submit-btn').style.display = 'none';
+        document.getElementById('loading-spinner').style.display = 'block';
+
+        QUESTION_BANK.forEach((q, index) => {
+            let qId = "q" + (index + 1);
+            let inputField = document.getElementById(qId);
+            let container = document.getElementById(qId + '-container');
+            let feedback = document.getElementById(qId + '-feedback');
+            let rawUserAns = inputField.value.trim();
+            
+            container.classList.remove('status-correct', 'status-incorrect');
+            inputField.readOnly = true; 
+
+            let isCorrect = (q.type === "math") ? checkMathEquivalence(rawUserAns, q.answer, q.vars) : (rawUserAns.toLowerCase() === q.answer.toLowerCase());
+
+            if (isCorrect) {
+                container.classList.add('status-correct');
+                feedback.innerHTML = `✓ <strong>Correct!</strong><br>${q.explanation}`;
+                totalScore += q.marks;
+                summaryReport += `Q${index+1}: ${rawUserAns} (Correct - ${q.marks} Marks)\n`;
+            } else {
+                container.classList.add('status-incorrect');
+                let emptyMsg = rawUserAns === "" ? "Blank." : "Incorrect.";
+                feedback.innerHTML = `✗ ${emptyMsg} Correct answer: <strong>${q.answer}</strong>.<br><br><strong>Solution:</strong> ${q.explanation}`;
+                summaryReport += `Q${index+1}: ${rawUserAns === "" ? "[Blank]" : rawUserAns} (Wrong - 0 Marks)\n`;
+            }
+        });
+         
+        MathJax.typesetPromise();
+
+        const payload = {
+            usn: studentDetails.usn, name: studentDetails.name, email: studentDetails.email,
+            section: studentDetails.section, roll: studentDetails.roll, score: totalScore, maxScore: totalMaxScore,
+            timeTaken: formattedTimeTaken, detailedReport: summaryReport
+        };
+
+        function attemptSubmission() {
+            let spinner = document.getElementById('loading-spinner');
+            
+            if (!navigator.onLine) {
+                spinner.innerHTML = "⚠️ <strong>Internet Connection Lost!</strong><br>DO NOT close this tab. We will auto-submit as soon as Wi-Fi reconnects...";
+                spinner.style.color = "var(--timer-color)";
+                setTimeout(attemptSubmission, 3000); 
+                return;
+            }
+
+            spinner.innerHTML = "Saving your results & sending email... Please wait.";
+            spinner.style.color = "#38bdf8";
+
+            fetch(GOOGLE_SHEET_URL, {
+                method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+            }).then(() => {
+                safeStorageClear(); 
+                safeStorageSet('testCompleted', 'true'); 
+                document.getElementById('loading-spinner').style.display = 'none';
+                document.getElementById('final-score').style.display = "block";
+                document.getElementById('final-score').innerHTML = `Marks Obtained: <span style="color: ${totalScore >= (totalMaxScore/2) ? 'var(--correct-color)' : 'var(--incorrect-color)'};">${totalScore} / ${totalMaxScore}</span><br>
+                <span style="font-size: 18px; color: var(--timer-color); display: block; margin-top: 5px;">Time Taken: ${formattedTimeTaken}</span><br>
+                <span style="font-size: 16px; color: #94a3b8; font-weight: normal; margin-top: 10px; display: block;">Your answers have been securely saved. You may now close this tab.</span>`;
+            }).catch(() => { 
+                spinner.innerHTML = "⚠️ <strong>Connection interrupted during save!</strong><br>Retrying securely... Do not close tab.";
+                spinner.style.color = "var(--incorrect-color)";
+                setTimeout(attemptSubmission, 3000);
+            });
+        } 
+
+        attemptSubmission();
+    }
+    
+    setInterval(function() {
+        if (typeof testActive !== 'undefined' && testActive === true) {
+            let currentAnswers = {};
+            let i = 1;
+            
+            while (document.getElementById("q" + i)) {
+                currentAnswers["q" + i] = document.getElementById("q" + i).value;
+                i++;
+            }
+            
+            currentAnswers["_markedForReview"] = markedForReview;
+            
+            if (Object.keys(currentAnswers).length > 0 && typeof studentDetails !== 'undefined' && studentDetails.usn) {
+                fetch(GOOGLE_SHEET_URL, {
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'text/plain' }, 
+                    body: JSON.stringify({ 
+                        action: "autosave", 
+                        usn: studentDetails.usn, 
+                        answers: currentAnswers 
+                    })
+                }).catch(err => console.log("Silent cloud save sync dropped:", err));
+            }
+        }
+    }, 30000);
+</script> 
+
+</body>
+</html>
