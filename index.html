@@ -348,14 +348,14 @@
         </div>
 
         <div id="reg-error" style="color: #ef4444; text-align: center; margin-bottom: 15px; font-weight: bold; display: none;"></div>
-        
-// =======================================================
-// need to test formatting arrays again, open the file and change display: none; back to display: block;.
-// =========================================================================
+     <!-- ========================================== -->
+<!-- --- need to test formatting arrays again, open the file and change display: none; back to display: block;.--- -->
+<!-- ========================================== --> 
+ 
 
         <div style="display: flex; gap: 10px;">
             <button type="button" id="start-btn" class="submit-btn" onclick="startTest()" style="background-color: #3b82f6;">Start Test</button>
-            <button type="button" id="dev-bypass-btn" class="submit-btn" onclick="launchDeveloperPreview()" style="background-color: #64748b; display: block;">Developer Bypass</button>
+            <button type="button" id="dev-bypass-btn" class="submit-btn" onclick="launchDeveloperPreview()" style="background-color: #64748b; display: none;">Developer Bypass</button>
         </div>
     </div>
 
@@ -382,10 +382,10 @@
     // =========================================================================
     // GLOBAL CONFIGURATION MATRIX (EASILY UPDATE EXAM PARAMS HERE)
     // =========================================================================
-    const EXAM_DURATION_MINUTES = 10; // Just update this single number to re-scale the assessment duration!
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyd2VSNc-TOOT8CQe2oyLQ5tu2PUiWwRaHmSyvUpH5rE6QFqGmaVJv3QsEW5taHouVs/exec"; 
+    const EXAM_DURATION_MINUTES = 60; // Just update this single number to re-scale the assessment duration!
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwAPR-oEm_TgK3LrI5cBWyuWaeML-vpMUpI_Zr08W_PP5kkMVAf31TIp29AhpF7B-Fz/exec"; 
      
-    // =========================================================================
+    // ========================================================================= 
     // THE 12-QUESTION BANK (4 Marks Each) = 48 Total Marks
     // =========================================================================
     const QUESTION_BANK = [
