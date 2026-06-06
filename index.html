@@ -349,9 +349,13 @@
 
         <div id="reg-error" style="color: #ef4444; text-align: center; margin-bottom: 15px; font-weight: bold; display: none;"></div>
         
+// =======================================================
+// need to test formatting arrays again, open the file and change display: none; back to display: block;.
+// =========================================================================
+
         <div style="display: flex; gap: 10px;">
             <button type="button" id="start-btn" class="submit-btn" onclick="startTest()" style="background-color: #3b82f6;">Start Test</button>
-            <button type="button" id="dev-bypass-btn" class="submit-btn" onclick="launchDeveloperPreview()" style="background-color: #64748b;">Developer Bypass</button>
+            <button type="button" id="dev-bypass-btn" class="submit-btn" onclick="launchDeveloperPreview()" style="background-color: #64748b; display: block;">Developer Bypass</button>
         </div>
     </div>
 
@@ -378,8 +382,8 @@
     // =========================================================================
     // GLOBAL CONFIGURATION MATRIX (EASILY UPDATE EXAM PARAMS HERE)
     // =========================================================================
-    const EXAM_DURATION_MINUTES = 1; // Just update this single number to re-scale the assessment duration!
-    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwAPR-oEm_TgK3LrI5cBWyuWaeML-vpMUpI_Zr08W_PP5kkMVAf31TIp29AhpF7B-Fz/exec"; 
+    const EXAM_DURATION_MINUTES = 10; // Just update this single number to re-scale the assessment duration!
+    const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbyd2VSNc-TOOT8CQe2oyLQ5tu2PUiWwRaHmSyvUpH5rE6QFqGmaVJv3QsEW5taHouVs/exec"; 
      
     // =========================================================================
     // THE 12-QUESTION BANK (4 Marks Each) = 48 Total Marks
@@ -396,6 +400,16 @@
         explanation: "<b>Step 1: Write the Auxiliary Equation</b><br>Replace $\\frac{d^2y}{dx^2}$ with $m^2$, $\\frac{dy}{dx}$ with $m$, and $y$ with $1$ to form the characteristic polynomial:<br>$$m^{2}-5m+6=0$$<br><b>Step 2: Factor and Find Roots</b><br>Factoring the quadratic polynomial yields:<br>$$(m-2)(m-3)=0$$<br>This gives two real, distinct roots: $m_{1}=2$ and $m_{2}=3$.<br><br><b>Step 3: Construct the Complementary Function (C.F.)</b><br>For real and distinct roots, the general solution template is $y_c = c_1e^{m_1x} + c_2e^{m_2x}$. Substituting our roots yields:<br>$$y_{c}=c_{1}e^{2x}+c_{2}e^{3x}$$"
       },
       {
+    module: "Module 2: Higher Order ODEs",
+    question: "Find the Particular Integral (P.I.) for the third-order Cauchy-Euler linear differential equation:<br>$$x^{3}\\frac{d^{3}y}{dx^{3}}+3x^{2}\\frac{d^{2}y}{dx^{2}}+x\\frac{dy}{dx}=65\\cos(\\log(x))$$",
+    placeholder: "e.g., 5*sin(t)",
+    type: "math",
+    vars: ["x"],
+    answer: "-65*sin(log(x))",
+    marks: 4,
+    explanation: "<b>Step 1: Convert to Constant Coefficients</b><br>Transform the third-order Cauchy-Euler equation by substituting $x = e^t$, which equates to $t = \\ln(x)$. The independent variable differential operators map to constant operators where $D = \\frac{d}{dt}$ as follows:<br>$$x\\frac{dy}{dx} = Dy$$<br>$$x^2\\frac{d^2y}{dx^2} = D(D-1)y$$<br>$$x^3\\frac{d^3y}{dx^3} = D(D-1)(D-2)y = (D^3 - 3D^2 + 2D)y$$<br>Substituting these operational definitions and converting the right-hand side driving function to $65\\cos(t)$ yields:<br>$$[D(D-1)(D-2) + 3D(D-1) + D]y = 65\\cos(t)$$<br>Expanding the brackets and gathering like terms simplifies the polynomial operator layout cleanly:<br>$$(D^3 - 3D^2 + 2D + 3D^2 - 3D + D)y = 65\\cos(t) \\implies D^3 y = 65\\cos(t)$$<br><b>Step 2: Solve for the Particular Integral in the $t$-Domain</b><br>Set up the inverse differential operator expression:<br>$$P.I. = \\frac{1}{D^3}(65\\cos(t))$$<br>The operator $\\frac{1}{D^3}$ represents integrating three successive times with respect to $t$. Alternatively, using the standard shortcut trigonometric operator rule where $D^2$ is replaced by $-a^2 = -1^2 = -1$:<br>$$P.I. = \\frac{1}{D \\cdot D^2}(65\\cos(t)) = \\frac{1}{D \\cdot (-1)}(65\\cos(t)) = -\\frac{1}{D}(65\\cos(t))$$<br>Integrating $65\\cos(t)$ once with respect to $t$ gives:<br>$$P.I. = -65\\sin(t)$$<br><b>Step 3: Revert Back to the Original Variable Domain ($x$)</b><br>Substitute $t = \\ln(x)$ (which is evaluated equivalently as $\\log(x)$ in standard engineering textbooks) back into the expression to yield your final textbook-style answer:<br>$$P.I. = -65\\sin(\\log(x))$$"
+  },
+      {
         module: "Module 2: Higher Order ODEs",
         question: "Find the Complementary Function (C.F.) of the differential equation:<br>$$\\frac{d^{2}y}{dx^{2}}+6\\frac{dy}{dx}+9y=0$$",
         placeholder: "e.g., (c1+c2*x+c3*x)*exp(9*x)",
@@ -408,12 +422,22 @@
       {
         module: "Module 2: Higher Order ODEs",
         question: "Find the Particular Integral (P.I.) for the case of failure in the differential equation:<br>$$(D^{2}-4D+3)y=e^{3x}$$",
-        placeholder: "e.g., (x/3)*exp(2*x)",
+        placeholder: "e.g., (x/33)*sin(23*x)",
         type: "math",
         vars: ["x"],
         answer: "(x/2)*exp(3*x)",
         marks: 4,
         explanation: "<b>Step 1: Express in Inverse Operator Form</b><br>Write the Particular Integral using the inverse operator framework:<br>$$P.I. = \\frac{1}{D^{2}-4D+3}e^{3x} = \\frac{1}{(D-3)(D-1)}e^{3x}$$<br><b>Step 2: Identify Case of Failure</b><br>Substituting $D = 3$ directly into the denominator yields $\\frac{1}{(3-3)(3-1)} = \\frac{1}{0}$, which indicates a standard shifting rule case of failure.<br><br><b>Step 3: Apply the Derivative Shifting Rule</b><br>Multiply by $x$ and differentiate the denominator with respect to $D$:<br>$$P.I. = x \\cdot \\frac{1}{\\frac{d}{dD}(D^2-4D+3)}e^{3x} = x \\cdot \\frac{1}{2D-4}e^{3x}$$<br>Substitute $D = 3$ safely into this new non-zero operator denominator:<br>$$P.I. = x \\cdot \\frac{e^{3x}}{2(3)-4} = \\frac{xe^{3x}}{2}$$"
+      },
+      {
+        module: "Module 2: Higher Order ODEs",
+        question: "Find the exact numerical value of the Wronskian $W$ for the differential equation solved by the variation of parameters method using its fundamental solutions $y_1$ and $y_2$:<br>$$\\frac{d^{2}y}{dx^{2}}+y=\\tan(x)$$",
+        placeholder: "Type exact number...",
+        type: "exact",
+        vars: [],
+        answer: "1",
+        marks: 4,
+        explanation: "<b>Step 1: Identify the Fundamental Solution Set</b><br>The underlying homogeneous system is $\\frac{d^2y}{dx^2} + y = 0$, giving an auxiliary layout of $m^2+1=0 \\rightarrow m = \\pm i$. This provides the fundamental solutions:<br>$$y_1 = \\cos(x), \\quad y_2 = \\sin(x)$$<br><b>Step 2: Apply the Wronskian Determinant Formula</b><br>The Wronskian configuration is calculated as follows:<br>$$W = y_1y_2' - y_2y_1'$$<br>Differentiating the functions yields $y_1' = -\\sin(x)$ and $y_2' = \\cos(x)$. Substituting these terms:<br>$$W = (\\cos(x))(\\cos(x)) - (\\sin(x))(-\\sin(x)) = \\cos^2(x) + \\sin^2(x) = 1$$"
       },
       {
         module: "Module 2: Higher Order ODEs",
@@ -445,30 +469,20 @@
         marks: 4,
         explanation: "<b>Step 1: Structure for Binomial Expansion</b><br>Isolate the lowest degree constant term from the operator denominator to build a power series structure:<br>$$P.I. = \\frac{1}{2\\left(1 + \\frac{3D}{2} + \\frac{D^2}{2}\\right)}(4x^2) = 2 \\left[1 + \\left(\\frac{3D}{2} + \\frac{D^2}{2}\\right)\\right]^{-1}(x^2)$$<br><b>Step 2: Expand Using Binomial Series</b><br>Expand $[1 + u]^{-1} = 1 - u + u^2 - \\dots$ keeping operators only up to $D^2$ since higher derivatives of $x^2$ vanish:<br>$$2\\left[1 - \\frac{3}{2}D + \\frac{7}{4}D^2\\right](x^2)$$<br><b>Step 3: Evaluate the Differential Operators</b><br>Apply the explicit derivative conditions ($D(x^2) = 2x$ and $D^2(x^2) = 2$):<br>$$P.I. = 2\\left[x^2 - \\frac{3}{2}(2x) + \\frac{7}{4}(2)\\right] = 2x^2 - 6x + 7$$"
       },
-      {
-        module: "Module 2: Higher Order ODEs",
-        question: "Find the Particular Integral (P.I.) for the linear differential operator system:<br>$$(D^{2}-D)y=x$$",
-        placeholder: "e.g., -x^3/3+3x",
-        type: "math",
-        vars: ["x"],
-        answer: "-x^2/2-x", 
-        marks: 4,
-        explanation: "<b>Step 1: Extract the Lowest Degree Operator</b><br>Factor out $-D$ from the denominator to create an evaluable series base:<br>$$P.I. = \\frac{1}{-D(1-D)}x = -\\frac{1}{D}(1-D)^{-1}x$$<br><b>Step 2: Expand the Operator Polynomial</b><br>Using the classic geometric power expansion series $(1-D)^{-1} = 1 + D + D^2 + \\dots$:<br>$$P.I. = -\\frac{1}{D}[1 + D](x) = -\\frac{1}{D}[x + 1]$$<br><b>Step 3: Evaluate the Integration Operator</b><br>The operator $\\frac{1}{D}$ denotes a direct indefinite integration with respect to $x$:<br>$$P.I. = -\\int(x+1)dx = -\\left(\\frac{x^2}{2} + x\\right) = -\\frac{x^2}{2} - x$$"
-      },
-      {
-        module: "Module 2: Higher Order ODEs",
-        question: "Find the exact numerical value of the Wronskian $W$ for the differential equation solved by the variation of parameters method using its fundamental solutions $y_1$ and $y_2$:<br>$$\\frac{d^{2}y}{dx^{2}}+y=\\tan(x)$$",
-        placeholder: "Type exact number...",
-        type: "exact",
-        vars: [],
-        answer: "1",
-        marks: 4,
-        explanation: "<b>Step 1: Identify the Fundamental Solution Set</b><br>The underlying homogeneous system is $\\frac{d^2y}{dx^2} + y = 0$, giving an auxiliary layout of $m^2+1=0 \\rightarrow m = \\pm i$. This provides the fundamental solutions:<br>$$y_1 = \\cos(x), \\quad y_2 = \\sin(x)$$<br><b>Step 2: Apply the Wronskian Determinant Formula</b><br>The Wronskian configuration is calculated as follows:<br>$$W = y_1y_2' - y_2y_1'$$<br>Differentiating the functions yields $y_1' = -\\sin(x)$ and $y_2' = \\cos(x)$. Substituting these terms:<br>$$W = (\\cos(x))(\\cos(x)) - (\\sin(x))(-\\sin(x)) = \\cos^2(x) + \\sin^2(x) = 1$$"
-      },
+     {
+    module: "Module 2: Higher Order ODEs",
+    question: "Find the Particular Integral (P.I.) for the Legendre linear differential equation:<br>$$(2x+3)^{2}\\frac{d^{2}y}{dx^{2}}+6(2x+3)\\frac{dy}{dx}+6y=\\log(2x+3)$$", // <-- Fixed: Added missing comma here
+    placeholder: "e.g., log(ax+b)/c",
+    type: "math",
+    vars: ["x"],
+    answer: "log(2x+3)/6 - 2/9",
+    marks: 4,
+    explanation: "<b>Step 1: Convert Using Legendre Substitutions</b><br>Transform the coordinate system by setting $(2x+3) = e^t$, which equates to $t = \\ln(2x+3)$. Differentiating with respect to $x$ yields the constant operator mappings:<br>$$(2x+3)\\frac{dy}{dx} = 2Dy$$<br>$$(2x+3)^2\\frac{d^2y}{dx^2} = 4D(D-1)y = (4D^2 - 4D)y$$<br>Substituting these operational expressions and rewriting the right-hand side driving function as $t$ yields:<br>$$[4D(D-1) + 6(2D) + 6]y = t \\implies (4D^2 + 8D + 6)y = t$$<br><b>Step 2: Solve for the Particular Integral using Binomial Expansion</b><br>Set up the inverse operator expression for the polynomial target function:<br>$$P.I. = \\frac{1}{4D^2 + 8D + 6}t = \\frac{1}{6\\left(1 + \\frac{8D + 4D^2}{6}\\right)}t$$<br>Expand using the negative binomial series $(1+u)^{-1} = 1 - u + u^2 - \\dots$, keeping operators only up to $D$ since higher derivatives of $t$ vanish:<br>$$P.I. = \\frac{1}{6}\\left[1 - \\frac{4}{3}D\\right]t = \\frac{1}{6}\\left(t - \\frac{4}{3}(1)\\right) = \\frac{t}{6} - \\frac{2}{9}$$<br><b>Step 3: Revert Back to the Original Variable Domain ($x$)</b><br>Substitute $t = \\ln(2x+3)$ back into the expression to yield your final textbook-style answer:<br>$$P.I. = \\frac{\\ln(2x+3)}{6} - \\frac{2}{9}$$"
+  },
       {
         module: "Module 2: Higher Order ODEs",
         question: "When solving the differential equation $y'' - 6y' + 9y = \\frac{e^{3x}}{x^2}$ via the method of Variation of Parameters, the homogeneous solution yields $C.F. = c_1y_1 + c_2y_2$. If the particular solution is structured as $P.I. = uy_1 + vy_2$ and the first parameter evaluates as $u = -\\ln|x|$, find the second functional multiplier parameter value $v$.",
-        placeholder: "e.g., -1/sin(x)",
+        placeholder: "e.g., -1/sec(x)",
         type: "math",
         vars: ["x"],
         answer: "-1/x",
@@ -478,23 +492,14 @@
       {
         module: "Module 2: Higher Order ODEs",
         question: "Find the Particular Integral (P.I.) for the Cauchy-Euler equation:<br>$$x^{2}\\frac{d^{2}y}{dx^{2}}-3x\\frac{dy}{dx}+3y=x^{2}$$",
-        placeholder: "e.g., -2x^9",
+        placeholder: "e.g., -9x^9+99",
         type: "math",
         vars: ["x"],
         answer: "-x^2",
         marks: 4,
         explanation: "<b>Step 1: Substitute Independent Variables</b><br>Transform the Cauchy system using $x = e^t$, which equates to $t = \\ln(x)$. The differential operators shift to:<br>$$x\\frac{dy}{dx} = Dy, \\quad x^2\\frac{d^2y}{dx^2} = D(D-1)y$$<br>Substituting these operators and replacing $x^2$ with $e^{2t}$ gives:<br>$$[D(D-1) - 3D + 3]y = e^{2t} \\implies (D^2 - 4D + 3)y = e^{2t}$$<br><b>Step 2: Solve the Transformed Operator System</b><br>Set up the inverse linear constant shift operation:<br>$$P.I. = \\frac{1}{D^2 - 4D + 3}e^{2t}$$<br>Substitute $D = 2$ directly into the algebraic polynomial base:<br>$$P.I. = \\frac{1}{(2)^2 - 4(2) + 3}e^{2t} = \\frac{1}{4 - 8 + 3}e^{2t} = \\frac{1}{-1}e^{2t} = -e^{2t}$$<br><b>Step 3: Revert Back to Original Variable $x$</b><br>Substitute $e^{2t} = x^2$ to return to the original variable domain:<br>$$P.I. = -x^2$$"
       },
-      {
-        module: "Module 2: Higher Order ODEs",
-        question: "Find the Particular Integral (P.I.) for the Legendre differential equation:<br>$$(1+x)^{2}\\frac{d^{2}y}{dx^{2}}-4(1+x)\\frac{dy}{dx}+6y=(1+x)^{3}$$",
-        placeholder: "e.g., (1+5x)^3*log(10+99x)",
-        type: "math",
-        vars: ["x"],
-        answer: "(1+x)^3*log(1+x)",
-        marks: 4,
-        explanation: "<b>Step 1: Convert Using Legendre Substitutions</b><br>Apply the coordinate transformation $(1+x) = e^t$, meaning $t = \\ln(1+x)$. The operators transform as follows:<br>$$(1+x)\\frac{dy}{dx} = Dy, \\quad (1+x)^2\\frac{d^2y}{dx^2} = D(D-1)y$$<br>Rewriting the equation with the exponential driving function ($e^{3t}$) yields:<br>$$[D(D-1) - 4D + 6]y = e^{3t} \\implies (D^2 - 5D + 6)y = e^{3t}$$<br><b>Step 2: Solve Using Shifting Failure Operations</b><br>Set up the inverse operator expression:<br>$$P.I. = \\frac{1}{(D-3)(D-2)}e^{3t}$$<br>Substituting $D = 3$ makes the factor $(D-3)$ zero. Evaluate the non-zero factor at $D = 3$ first:<br>$$P.I. = \\frac{1}{3-2} \\cdot \\frac{1}{D-3}e^{3t} = \\frac{1}{D-3}e^{3t}$$<br>Applying the standard case of failure shifting rules yields: $t \\cdot e^{3t}$.<br><br><b>Step 3: Convert Back to the $x$ Variable Domain</b><br>Replace $t$ with $\\ln(1+x)$ and $e^{3t}$ with $(1+x)^3$ to find the final layout expression:<br>$$P.I. = (1+x)^3\\ln(1+x)$$"
-      },
+
       {
         module: "Module 2: Higher Order ODEs",
         question: "Find the Particular Integral (P.I.) for the Legendre linear differential equation:<br>$$(1+x)^{2}\\frac{d^{2}y}{dx^{2}}+(1+x)\\frac{dy}{dx}+y=4\\sin(\\ln(1+x))$$",
