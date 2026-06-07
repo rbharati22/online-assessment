@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Assessment-1</title>
+    <title>Online Assessment-Module 5</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -104,7 +104,7 @@
         .status-correct .answer-input { border-color: var(--correct-color); background-color: rgba(34, 197, 94, 0.1); }
         .status-correct .feedback { display: block; color: var(--correct-color); background: rgba(34, 197, 94, 0.05); }
         
-        .status-incorrect .answer-input { border-color: var(--incorrect-color); background-color: rgba(239, 68, 68, 0.1); }
+         .status-incorrect .answer-input { border-color: var(--incorrect-color); background-color: rgba(239, 68, 68, 0.1); }
         .status-incorrect .feedback { display: block; color: var(--incorrect-color); background: rgba(239, 68, 68, 0.05); }
         
         .loading-text { text-align: center; color: #38bdf8; font-weight: bold; margin-top: 20px;}
@@ -141,7 +141,7 @@
         
         /* Fixed Footer Container for Navigation & Submission Controls */
         .quiz-footer-fixed {
-            position: fixed;
+             position: fixed;
             bottom: 0; 
             left: 50%;
             transform: translateX(-50%);  
@@ -310,7 +310,7 @@
 </div>
 
 <div class="test-container" id="main-test-element">
-    <h1>Online Assessment-1</h1>
+    <h1>Online Assessment-Modulo 5</h1>
     <div class="sub-header" id="score-header">Total Marks: --</div>
 
     <div id="lockout-screen" class="lockout-msg">
@@ -349,8 +349,8 @@
 
         <div id="reg-error" style="color: #ef4444; text-align: center; margin-bottom: 15px; font-weight: bold; display: none;"></div>
      <!-- ========================================== -->
-<!-- --- need to test formatting arrays again, open the file and change display: none; back to display: block;.--- -->
-<!-- ========================================== --> 
+<!-- --- Developer View: need to test formatting arrays again, open the file and change display: none; back to display: block;.--- -->
+<!-- ========================================== -->  
  
 
         <div style="display: flex; gap: 10px;">
@@ -386,131 +386,83 @@
     const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwAPR-oEm_TgK3LrI5cBWyuWaeML-vpMUpI_Zr08W_PP5kkMVAf31TIp29AhpF7B-Fz/exec"; 
      
     // ========================================================================= 
-    // THE 12-QUESTION BANK (4 Marks Each) = 48 Total Marks
+    // THE 12-QUESTION BANK
     // =========================================================================
-    const QUESTION_BANK = [
-      {
-        module: "Module 2: Higher Order ODEs",
-        question: "Find the Complementary Function (C.F.) of the ordinary differential equation:<br>$$\\frac{d^{2}y}{dx^{2}}-5\\frac{dy}{dx}+6y=0$$",
-        placeholder: "e.g., c1*exp(7*x)+c2*cos(3*x)",
-        type: "math",
-        vars: ["x", "c1", "c2"],
-        answer: "c1*exp(2*x)+c2*exp(3*x)",
-        marks: 4,
-        explanation: "<b>Step 1: Write the Auxiliary Equation</b><br>Replace $\\frac{d^2y}{dx^2}$ with $m^2$, $\\frac{dy}{dx}$ with $m$, and $y$ with $1$ to form the characteristic polynomial:<br>$$m^{2}-5m+6=0$$<br><b>Step 2: Factor and Find Roots</b><br>Factoring the quadratic polynomial yields:<br>$$(m-2)(m-3)=0$$<br>This gives two real, distinct roots: $m_{1}=2$ and $m_{2}=3$.<br><br><b>Step 3: Construct the Complementary Function (C.F.)</b><br>For real and distinct roots, the general solution template is $y_c = c_1e^{m_1x} + c_2e^{m_2x}$. Substituting our roots yields:<br>$$y_{c}=c_{1}e^{2x}+c_{2}e^{3x}$$"
-      },
-      {
-    module: "Module 2: Higher Order ODEs",
-    question: "Find the Particular Integral (P.I.) for the third-order Cauchy-Euler linear differential equation:<br>$$x^{3}\\frac{d^{3}y}{dx^{3}}+3x^{2}\\frac{d^{2}y}{dx^{2}}+x\\frac{dy}{dx}=65\\cos(\\log(x))$$",
-    placeholder: "e.g., 5*sin(t)",
-    type: "math",
-    vars: ["x"],
-    answer: "-65*sin(log(x))",
-    marks: 4,
-    explanation: "<b>Step 1: Convert to Constant Coefficients</b><br>Transform the third-order Cauchy-Euler equation by substituting $x = e^t$, which equates to $t = \\ln(x)$. The independent variable differential operators map to constant operators where $D = \\frac{d}{dt}$ as follows:<br>$$x\\frac{dy}{dx} = Dy$$<br>$$x^2\\frac{d^2y}{dx^2} = D(D-1)y$$<br>$$x^3\\frac{d^3y}{dx^3} = D(D-1)(D-2)y = (D^3 - 3D^2 + 2D)y$$<br>Substituting these operational definitions and converting the right-hand side driving function to $65\\cos(t)$ yields:<br>$$[D(D-1)(D-2) + 3D(D-1) + D]y = 65\\cos(t)$$<br>Expanding the brackets and gathering like terms simplifies the polynomial operator layout cleanly:<br>$$(D^3 - 3D^2 + 2D + 3D^2 - 3D + D)y = 65\\cos(t) \\implies D^3 y = 65\\cos(t)$$<br><b>Step 2: Solve for the Particular Integral in the $t$-Domain</b><br>Set up the inverse differential operator expression:<br>$$P.I. = \\frac{1}{D^3}(65\\cos(t))$$<br>The operator $\\frac{1}{D^3}$ represents integrating three successive times with respect to $t$. Alternatively, using the standard shortcut trigonometric operator rule where $D^2$ is replaced by $-a^2 = -1^2 = -1$:<br>$$P.I. = \\frac{1}{D \\cdot D^2}(65\\cos(t)) = \\frac{1}{D \\cdot (-1)}(65\\cos(t)) = -\\frac{1}{D}(65\\cos(t))$$<br>Integrating $65\\cos(t)$ once with respect to $t$ gives:<br>$$P.I. = -65\\sin(t)$$<br><b>Step 3: Revert Back to the Original Variable Domain ($x$)</b><br>Substitute $t = \\ln(x)$ (which is evaluated equivalently as $\\log(x)$ in standard engineering textbooks) back into the expression to yield your final textbook-style answer:<br>$$P.I. = -65\\sin(\\log(x))$$"
+const QUESTION_BANK = [
+  {
+    module: "Module 3: Interpolation Techniques",
+    question: "Using Newton's forward interpolation formula, calculate the exact value of $y(1.5)$ from the following equally spaced dataset:<br><br>$$\\begin{array}{|c|c|c|c|c|} \\hline x & 1 & 2 & 3 & 4 \\\\ \\hline y & 10 & 24 & 52 & 100 \\\\ \\hline \\end{array}$$",
+    placeholder: "e.g., 13.329",
+    type: "exact",
+    vars: [],
+    answer: "15.625",
+    marks: 5,
+    explanation: "<b>Step 1: Construct the Forward Difference Table</b><br>Calculate differences sequentially:<br>$\\Delta y_0 = 24 - 10 = 14$<br>$\\Delta y_1 = 52 - 24 = 28 \\implies \\Delta^2 y_0 = 28 - 14 = 14$<br>$\\Delta y_2 = 100 - 52 = 48 \\implies \\Delta^2 y_1 = 48 - 28 = 20 \\implies \\Delta^3 y_0 = 20 - 14 = 6$<br><br><b>Step 2: Determine Interpolation Parameter $p$</b><br>Given interval $h = 1$ and initial point $x_0 = 1$:<br>$$p = \\frac{x - x_0}{h} = \\frac{1.5 - 1}{1} = 0.5$$<br><b>Step 3: Apply Newton's Forward Formula</b><br>$$y(1.5) = y_0 + p\\Delta y_0 + \\frac{p(p-1)}{2!}\\Delta^2 y_0 + \\frac{p(p-1)(p-2)}{3!}\\Delta^3 y_0$$<br>$$y(1.5) = 10 + 0.5(14) + \\frac{0.5(-0.5)}{2}(14) + \\frac{0.5(-0.5)(-1.5)}{6}(6)$$$$y(1.5) = 10 + 7 - 1.75 + 0.375 = 15.625$$"
   },
-      {
-        module: "Module 2: Higher Order ODEs",
-        question: "Find the Complementary Function (C.F.) of the differential equation:<br>$$\\frac{d^{2}y}{dx^{2}}+6\\frac{dy}{dx}+9y=0$$",
-        placeholder: "e.g., (c1+c2*x+c3*x)*exp(9*x)",
-        type: "math",
-        vars: ["x", "c1", "c2"],
-        answer: "(c1+c2*x)*exp(-3*x)",
-        marks: 4,
-        explanation: "<b>Step 1: Form the Auxiliary Equation</b><br>Set up the auxiliary algebraic statement:<br>$$m^{2}+6m+9=0$$<br><b>Step 2: Solve for Roots</b><br>Recognize the left side as a perfect square trinomial:<br>$$(m+3)^{2}=0$$<br>The roots are real and repeated: $m = -3, -3$.<br><br><b>Step 3: Apply the Repeated Roots Formula</b><br>When roots are real and repeated ($m_1 = m_2 = m$), the template is $y_c = (c_1 + c_2x)e^{mx}$. Applying our root:<br>$$y_{c}=(c_{1}+c_{2}x)e^{-3x}$$"
-      },
-      {
-        module: "Module 2: Higher Order ODEs",
-        question: "Find the Particular Integral (P.I.) for the case of failure in the differential equation:<br>$$(D^{2}-4D+3)y=e^{3x}$$",
-        placeholder: "e.g., (x/33)*sin(23*x)",
-        type: "math",
-        vars: ["x"],
-        answer: "(x/2)*exp(3*x)",
-        marks: 4,
-        explanation: "<b>Step 1: Express in Inverse Operator Form</b><br>Write the Particular Integral using the inverse operator framework:<br>$$P.I. = \\frac{1}{D^{2}-4D+3}e^{3x} = \\frac{1}{(D-3)(D-1)}e^{3x}$$<br><b>Step 2: Identify Case of Failure</b><br>Substituting $D = 3$ directly into the denominator yields $\\frac{1}{(3-3)(3-1)} = \\frac{1}{0}$, which indicates a standard shifting rule case of failure.<br><br><b>Step 3: Apply the Derivative Shifting Rule</b><br>Multiply by $x$ and differentiate the denominator with respect to $D$:<br>$$P.I. = x \\cdot \\frac{1}{\\frac{d}{dD}(D^2-4D+3)}e^{3x} = x \\cdot \\frac{1}{2D-4}e^{3x}$$<br>Substitute $D = 3$ safely into this new non-zero operator denominator:<br>$$P.I. = x \\cdot \\frac{e^{3x}}{2(3)-4} = \\frac{xe^{3x}}{2}$$"
-      },
-      {
-        module: "Module 2: Higher Order ODEs",
-        question: "Find the exact numerical value of the Wronskian $W$ for the differential equation solved by the variation of parameters method using its fundamental solutions $y_1$ and $y_2$:<br>$$\\frac{d^{2}y}{dx^{2}}+y=\\tan(x)$$",
-        placeholder: "Type exact number...",
-        type: "exact",
-        vars: [],
-        answer: "1",
-        marks: 4,
-        explanation: "<b>Step 1: Identify the Fundamental Solution Set</b><br>The underlying homogeneous system is $\\frac{d^2y}{dx^2} + y = 0$, giving an auxiliary layout of $m^2+1=0 \\rightarrow m = \\pm i$. This provides the fundamental solutions:<br>$$y_1 = \\cos(x), \\quad y_2 = \\sin(x)$$<br><b>Step 2: Apply the Wronskian Determinant Formula</b><br>The Wronskian configuration is calculated as follows:<br>$$W = y_1y_2' - y_2y_1'$$<br>Differentiating the functions yields $y_1' = -\\sin(x)$ and $y_2' = \\cos(x)$. Substituting these terms:<br>$$W = (\\cos(x))(\\cos(x)) - (\\sin(x))(-\\sin(x)) = \\cos^2(x) + \\sin^2(x) = 1$$"
-      },
-      {
-        module: "Module 2: Higher Order ODEs",
-        question: "Find the Particular Integral (P.I.) for the differential equation:<br>$$(D^{2}-2D+1)y=4e^{x}$$",
-        placeholder: "e.g., 9*x^9*exp(9*x)",
-        type: "math",
-        vars: ["x"],
-        answer: "2*x^2*exp(x)",
-        marks: 4,
-        explanation: "<b>Step 1: Write in Operator Form</b><br>Express the differential equation using its factored operator base:<br>$$P.I. = \\frac{1}{(D-1)^{2}}(4e^{x})$$<br><b>Step 2: Apply the Extension Rule for Failure</b><br>Substituting $D = 1$ causes the entire quadratic operator base to fall to zero. Since $D = 1$ is a double root (multiplicity $r = 2$), we apply the analytical extension formula $\\frac{1}{(D-a)^r}e^{ax} = \\frac{x^r}{r!}e^{ax}$:<br>$$P.I. = 4 \\cdot \\frac{x^{2}}{2!}e^{x} = 2x^{2}e^{x}$$"
-      },
-      {
-        module: "Module 2: Higher Order ODEs",
-        question: "Find the Particular Integral (P.I.) for the differential equation:<br>$$(D^{2}+9)y=\\cos(2x)$$",
-        placeholder: "e.g., sin(5*x)/99",
-        type: "math",
-        vars: ["x"],
-        answer: "cos(2*x)/5",
-        marks: 4,
-        explanation: "<b>Step 1: Formulate the Inverse Sinusoidal Operator</b><br>Set up the standard inverse operation for trigonometric targets:<br>$$P.I. = \\frac{1}{D^{2}+9}\\cos(2x)$$<br><b>Step 2: Substitute $D^2 = -a^2$</b><br>For terms containing $\\cos(ax+b)$ or $\\sin(ax+b)$, replace $D^2$ directly with $-a^2$. Here, $a = 2$, so we plug in $D^2 = -(2)^2 = -4$:<br>$$P.I. = \\frac{1}{-4+9}\\cos(2x) = \\frac{\\cos(2x)}{5}$$"
-      },
-      {
-        module: "Module 2: Higher Order ODEs",
-        question: "Find the Particular Integral (P.I.) for the differential equation with a polynomial input:<br>$$(D^{2}+3D+2)y=4x^{2}$$",
-        placeholder: "e.g., 2*x^3+2*x+2",
-        type: "math",
-        vars: ["x"],
-        answer: "2*x^2-6*x+7",
-        marks: 4,
-        explanation: "<b>Step 1: Structure for Binomial Expansion</b><br>Isolate the lowest degree constant term from the operator denominator to build a power series structure:<br>$$P.I. = \\frac{1}{2\\left(1 + \\frac{3D}{2} + \\frac{D^2}{2}\\right)}(4x^2) = 2 \\left[1 + \\left(\\frac{3D}{2} + \\frac{D^2}{2}\\right)\\right]^{-1}(x^2)$$<br><b>Step 2: Expand Using Binomial Series</b><br>Expand $[1 + u]^{-1} = 1 - u + u^2 - \\dots$ keeping operators only up to $D^2$ since higher derivatives of $x^2$ vanish:<br>$$2\\left[1 - \\frac{3}{2}D + \\frac{7}{4}D^2\\right](x^2)$$<br><b>Step 3: Evaluate the Differential Operators</b><br>Apply the explicit derivative conditions ($D(x^2) = 2x$ and $D^2(x^2) = 2$):<br>$$P.I. = 2\\left[x^2 - \\frac{3}{2}(2x) + \\frac{7}{4}(2)\\right] = 2x^2 - 6x + 7$$"
-      },
-     {
-    module: "Module 2: Higher Order ODEs",
-    question: "Find the Particular Integral (P.I.) for the Legendre linear differential equation:<br>$$(2x+3)^{2}\\frac{d^{2}y}{dx^{2}}+6(2x+3)\\frac{dy}{dx}+6y=\\log(2x+3)$$", // <-- Fixed: Added missing comma here
-    placeholder: "e.g., log(ax+b)/c",
-    type: "math",
-    vars: ["x"],
-    answer: "log(2x+3)/6 - 2/9",
-    marks: 4,
-    explanation: "<b>Step 1: Convert Using Legendre Substitutions</b><br>Transform the coordinate system by setting $(2x+3) = e^t$, which equates to $t = \\ln(2x+3)$. Differentiating with respect to $x$ yields the constant operator mappings:<br>$$(2x+3)\\frac{dy}{dx} = 2Dy$$<br>$$(2x+3)^2\\frac{d^2y}{dx^2} = 4D(D-1)y = (4D^2 - 4D)y$$<br>Substituting these operational expressions and rewriting the right-hand side driving function as $t$ yields:<br>$$[4D(D-1) + 6(2D) + 6]y = t \\implies (4D^2 + 8D + 6)y = t$$<br><b>Step 2: Solve for the Particular Integral using Binomial Expansion</b><br>Set up the inverse operator expression for the polynomial target function:<br>$$P.I. = \\frac{1}{4D^2 + 8D + 6}t = \\frac{1}{6\\left(1 + \\frac{8D + 4D^2}{6}\\right)}t$$<br>Expand using the negative binomial series $(1+u)^{-1} = 1 - u + u^2 - \\dots$, keeping operators only up to $D$ since higher derivatives of $t$ vanish:<br>$$P.I. = \\frac{1}{6}\\left[1 - \\frac{4}{3}D\\right]t = \\frac{1}{6}\\left(t - \\frac{4}{3}(1)\\right) = \\frac{t}{6} - \\frac{2}{9}$$<br><b>Step 3: Revert Back to the Original Variable Domain ($x$)</b><br>Substitute $t = \\ln(2x+3)$ back into the expression to yield your final textbook-style answer:<br>$$P.I. = \\frac{\\ln(2x+3)}{6} - \\frac{2}{9}$$"
+  {
+    module: "Module 3: Interpolation Techniques",
+    question: "Using Newton's backward interpolation formula, determine the value of $y(3.5)$ from the following given data grid:<br><br>$$\\begin{array}{|c|c|c|c|c|} \\hline x & 1 & 2 & 3 & 4 \\\\ \\hline y & 10 & 24 & 52 & 100 \\\\ \\hline \\end{array}$$",
+    placeholder: "e.g., 0.000",
+    type: "exact",
+    vars: [],
+    answer: "73.125",
+    marks: 5,
+    explanation: "<b>Step 1: Extract Backward Difference Elements</b><br>From the table, the base terminal elements are located at $x_n = 4$ and $y_n = 100$.<br>The respective backward differences compute as:<br>$\\nabla y_3 = 48$, $\\nabla^2 y_3 = 20$, and $\\nabla^3 y_3 = 6$.<br><br><b>Step 2: Calculate Backward Parameter $p$</b><br>With a common difference of $h = 1$ and target boundary value $x = 3.5$:<br>$$p = \\frac{x - x_n}{h} = \\frac{3.5 - 4}{1} = -0.5$$<br><b>Step 3: Evaluate via Newton's Backward Series</b><br>$$y(3.5) = y_n + p\\nabla y_n + \\frac{p(p+1)}{2!}\\nabla^2 y_n + \\frac{p(p+1)(p+2)}{3!}\\nabla^3 y_n$$<br>$$y(3.5) = 100 + (-0.5)(48) + \\frac{(-0.5)(0.5)}{2}(20) + \\frac{(-0.5)(0.5)(1.5)}{6}(6)$$$$y(3.5) = 100 - 24 - 2.5 - 0.375 = 73.125$$"
   },
-      {
-        module: "Module 2: Higher Order ODEs",
-        question: "When solving the differential equation $y'' - 6y' + 9y = \\frac{e^{3x}}{x^2}$ via the method of Variation of Parameters, the homogeneous solution yields $C.F. = c_1y_1 + c_2y_2$. If the particular solution is structured as $P.I. = uy_1 + vy_2$ and the first parameter evaluates as $u = -\\ln|x|$, find the second functional multiplier parameter value $v$.",
-        placeholder: "e.g., -1/sec(x)",
-        type: "math",
-        vars: ["x"],
-        answer: "-1/x",
-        marks: 4,
-        explanation: "<b>Step 1: Identify Components and the Wronskian</b><br>The auxiliary system $(m-3)^2 = 0$ yields repeated roots, so $y_1 = e^{3x}$ and $y_2 = xe^{3x}$.<br>The Wronskian $W = y_1y_2' - y_2y_1'$ calculates to:<br>$$W = e^{3x}(e^{3x} + 3xe^{3x}) - xe^{3x}(3e^{3x}) = e^{6x}$$<br>The non-homogeneous driving function is $R(x) = \\frac{e^{3x}}{x^2}$.<br><br><b>Step 2: Apply the Variation of Parameters Formula for $v$</b><br>The formula for computing the tracking variable $v$ is defined as:<br>$$v = \\int \\frac{y_1 R(x)}{W} dx$$<br>Substituting our variables into the integral:<br>$$v = \\int \\frac{e^{3x} \\cdot \\left(\\frac{e^{3x}}{x^2}\\right)}{e^{6x}} dx = \\int \\frac{e^{6x}}{x^2 \\cdot e^{6x}} dx = \\int \\frac{1}{x^2} dx = -\\frac{1}{x}$$"
-      },
-      {
-        module: "Module 2: Higher Order ODEs",
-        question: "Find the Particular Integral (P.I.) for the Cauchy-Euler equation:<br>$$x^{2}\\frac{d^{2}y}{dx^{2}}-3x\\frac{dy}{dx}+3y=x^{2}$$",
-        placeholder: "e.g., -9x^9+99",
-        type: "math",
-        vars: ["x"],
-        answer: "-x^2",
-        marks: 4,
-        explanation: "<b>Step 1: Substitute Independent Variables</b><br>Transform the Cauchy system using $x = e^t$, which equates to $t = \\ln(x)$. The differential operators shift to:<br>$$x\\frac{dy}{dx} = Dy, \\quad x^2\\frac{d^2y}{dx^2} = D(D-1)y$$<br>Substituting these operators and replacing $x^2$ with $e^{2t}$ gives:<br>$$[D(D-1) - 3D + 3]y = e^{2t} \\implies (D^2 - 4D + 3)y = e^{2t}$$<br><b>Step 2: Solve the Transformed Operator System</b><br>Set up the inverse linear constant shift operation:<br>$$P.I. = \\frac{1}{D^2 - 4D + 3}e^{2t}$$<br>Substitute $D = 2$ directly into the algebraic polynomial base:<br>$$P.I. = \\frac{1}{(2)^2 - 4(2) + 3}e^{2t} = \\frac{1}{4 - 8 + 3}e^{2t} = \\frac{1}{-1}e^{2t} = -e^{2t}$$<br><b>Step 3: Revert Back to Original Variable $x$</b><br>Substitute $e^{2t} = x^2$ to return to the original variable domain:<br>$$P.I. = -x^2$$"
-      },
-
-      {
-        module: "Module 2: Higher Order ODEs",
-        question: "Find the Particular Integral (P.I.) for the Legendre linear differential equation:<br>$$(1+x)^{2}\\frac{d^{2}y}{dx^{2}}+(1+x)\\frac{dy}{dx}+y=4\\sin(\\ln(1+x))$$",
-        placeholder: "e.g., 4*log(x)*5+3*sin(log(x))",
-        type: "math",
-        vars: ["x"],
-        answer: "-2*log(1+x)*cos(log(1+x))",
-        marks: 4,
-        explanation: "<b>Step 1: Convert Using Legendre Substitutions</b><br>Transform the coordinate framework by setting $(1+x) = e^t$, which means $t = \\ln(1+x)$. The corresponding constant coefficient operators map as follows:<br>$$(1+x)\\frac{dy}{dx} = Dy, \\quad (1+x)^2\\frac{d^2y}{dx^2} = D(D-1)y$$<br>Substituting these operational definitions and rewriting the right-hand driving function yields:<br>$$[D(D-1) + D + 1]y = 4\\sin(t) \\implies (D^2 + 1)y = 4\\sin(t)$$<br><b>Step 2: Solve for the Particular Integral (Case of Failure)</b><br>Set up the inverse operator expression in the transformed $t$-domain:<br>$$P.I. = \\frac{1}{D^2 + 1}(4\\sin(t))$$<br>Substituting $D^2 = -a^2 = -1^2 = -1$ yields a denominator of zero, indicating a standard sinusoidal case of failure. Applying the derivative extension rule (or the classic identity $\\frac{1}{D^2+a^2}\\sin(at) = -\\frac{t}{2a}\\cos(at)$) gives:<br>$$P.I. = 4 \\cdot \\left( -\\frac{t}{2(1)}\\cos(t) \\right) = -2t\\cos(t)$$<br><b>Step 3: Revert Back to the Original Variable Domain ($x$)</b><br>Substitute $t = \\ln(1+x)$ back into the expression to yield your final textbook-style answer:<br>$$P.I. = -2\\ln(1+x)\\cos(\\ln(1+x))$$"
-      }
-    ];
+  {
+    module: "Module 3: Interpolation Techniques",
+    question: "Apply Lagrange's interpolation formula to compute the exact integer value of $y(2)$ from the following unequally spaced experimental nodes:<br><br>$$\\begin{array}{|c|c|c|c|c|} \\hline x & 0 & 1 & 3 & 4 \\\\ \\hline y & 5 & 6 & 50 & 105 \\\\ \\hline \\end{array}$$",
+    placeholder: "Type exact integer...",
+    type: "exact",
+    vars: [],
+    answer: "19",
+    marks: 5,
+    explanation: "<b>Step 1: Write down Lagrange Coefficients at $x = 2$</b><br>$$L_0(2) = \\frac{(2-1)(2-3)(2-4)}{(0-1)(0-3)(0-4)} = \\frac{2}{-12} = -\\frac{1}{6}$$$$L_1(2) = \\frac{(2-0)(2-3)(2-4)}{(1-0)(1-3)(1-4)} = \\frac{4}{6} = \\frac{2}{3}$$$$L_2(2) = \\frac{(2-0)(2-1)(2-4)}{(3-0)(3-1)(3-4)} = \\frac{-4}{-6} = \\frac{2}{3}$$$$L_3(2) = \\frac{(2-0)(2-1)(2-3)}{(4-0)(4-1)(4-3)} = \\frac{-2}{12} = -\\frac{1}{6}$$<br><b>Step 2: Aggregate Terms</b><br>$$y(2) = y_0L_0(2) + y_1L_1(2) + y_2L_2(2) + y_3L_3(2)$$$$y(2) = 5\\left(-\\frac{1}{6}\\right) + 6\\left(\\frac{2}{3}\\right) + 50\\left(\\frac{2}{3}\\right) + 105\\left(-\\frac{1}{6}\\right)$$$$y(2) = -\\frac{5}{6} + 4 + \\frac{100}{3} - \\frac{105}{6} = \\frac{114}{6} = 19$$"
+  },
+  {
+    module: "Module 3: Interpolation Techniques",
+    question: "Using Newton's divided difference interpolation formula, compute the final value of $y(5)$ from the following asymmetrical coordination map:<br><br>$$\\begin{array}{|c|c|c|c|c|} \\hline x & 2 & 4 & 7 & 8 \\\\ \\hline y & 5 & 17 & 50 & 65 \\\\ \\hline \\end{array}$$",
+    placeholder: "Type exact integer...",
+    type: "exact",
+    vars: [],
+    answer: "26",
+    marks: 5,
+    explanation: "<b>Step 1: Compute Divided Differences Table</b><br>First-order divided differences:<br>$f[2,4] = \\frac{17-5}{4-2} = 6$; $f[4,7] = \\frac{50-17}{7-4} = 11$; $f[7,8] = \\frac{65-50}{8-7} = 15$<br><br>Second-order divided differences:<br>$f[2,4,7] = \\frac{11-6}{7-2} = 1$; $f[4,7,8] = \\frac{15-11}{8-4} = 1$<br>Third-order divided difference falls to zero ($f[2,4,7,8] = 0$).<br><br><b>Step 2: Solve Using Divided Difference Polynomial</b><br>$$y(x) = f(x_0) + (x-x_0)f[x_0,x_1] + (x-x_0)(x-x_1)f[x_0,x_1,x_2]$$$$y(5) = 5 + (5-2)(6) + (5-2)(5-4)(1)$$$$y(5) = 5 + 18 + 3 = 26$$"
+  },
+  {
+    module: "Module 3: Interpolation Techniques",
+    question: "Find the calculated spatial value of $x$ for which $y = 15$ from the following dataset using Lagrange's inverse interpolation technique (Correct to 4 decimal places):<br><br>$$\\begin{array}{|c|c|c|c|} \\hline x & 2 & 3 & 4 \\\\ \\hline y & 10 & 19 & 34 \\\\ \\hline \\end{array}$$",
+    placeholder: "e.g., 2.2233",
+    type: "exact",
+    vars: [],
+    answer: "2.5926",
+    marks: 5,
+    tolerance: 0.00018, // <-- ADD THIS LINE HERE! 
+    explanation: "<b>Step 1: State Formula for Inverse Lagrange Map</b><br>By interchanging roles, $y$ acts as our variable driver:<br>$$x = \\frac{(y-y_1)(y-y_2)}{(y_0-y_1)(y_0-y_2)}x_0 + \\frac{(y-y_0)(y-y_2)}{(y_1-y_0)(y_1-y_2)}x_1 + \\frac{(y-y_0)(y-y_1)}{(y_2-y_0)(y_2-y_1)}x_2$$<br><b>Step 2: Evaluate Terms Using 6 Decimal Places</b><br>$$x_0 \\text{ term} = \\frac{(15-19)(15-34)}{(10-19)(10-34)}(2) = \\frac{76}{216}(2) \\approx 0.703704$$$$x_1 \\text{ term} = \\frac{(15-10)(15-34)}{(19-10)(19-34)}(3) = \\frac{-95}{-135}(3) \\approx 2.111111$$$$x_2 \\text{ term} = \\frac{(15-10)(15-19)}{(34-10)(34-19)}(4) = \\frac{-20}{360}(4) \\approx -0.222222$$<br><b>Step 3: Aggregate and Round to 4 Decimals</b><br>$$x = 0.703704 + 2.111111 - 0.222222 = 2.592593 \\approx 2.5926$$"
+  },
+  {
+    module: "Module 4: Numerical Integration",
+    question: "Evaluate the definite calculus integral $I = \\int_{0}^{1} \\frac{1}{1+x} \\, dx$ by partitioning the area into $4$ equal strips ($n=4$) using <b>Simpson's 1/3 Rule</b> (Correct to 4 decimal places).",
+    placeholder: "e.g., 6.665",
+    type: "exact",
+    vars: [],
+    answer: "0.6933",
+    marks: 5,
+    tolerance: 0.0001, // <-- ADD THIS LINE HERE! Allows answers from 2.5925 to 2.5927
+    explanation: "<b>Step 1: Generate Node Intervals to 6 Decimal Places</b><br>Step size $h = \\frac{1-0}{4} = 0.25$. Nodes compute as follows:<br>$y_0 = f(0) = 1.000000$<br>$y_1 = f(0.25) = \\frac{1}{1.25} = 0.800000$<br>$y_2 = f(0.50) = \\frac{1}{1.50} = 0.666667$<br>$y_3 = f(0.75) = \\frac{1}{1.75} = 0.571429$<br>$y_4 = f(1.00) = \\frac{1}{2.00} = 0.500000$<br><br><b>Step 2: Apply Simpson's 1/3 Integration Rule</b><br>$$I = \\frac{h}{3} \\left[ (y_0 + y_4) + 4(y_1 + y_3) + 2y_2 \\right]$$$$I = \\frac{0.25}{3} \\left[ (1.000000 + 0.500000) + 4(0.800000 + 0.571429) + 2(0.666667) \\right]$$$$I = \\frac{0.25}{3} \\left[ 1.500000 + 5.485716 + 1.333334 \\right]$$$$I = \\frac{0.25}{3} \\left[ 8.319050 \\right] = 0.693254 \\approx 0.6933$$"
+  },
+  {
+    module: "Module 4: Numerical Integration",
+    question: "Evaluate the exponential value of $\\int_{0}^{0.6} e^{-x^2} \\, dx$ by mapping $3$ equal subintervals ($n=3$) via <b>Simpson's 3/8 Rule</b> (Correct to 4 decimal places).",
+    placeholder: "e.g., 1.3332",
+    type: "exact",
+    vars: [],
+    answer: "0.5352",
+    marks: 5,
+    tolerance: 0.0001, // <-- ADD THIS LINE HERE! Allows answers from 2.5925 to 2.5927
+    explanation: "<b>Step 1: Define Table Matrix to 6 Decimal Places</b><br>With step length $h = \\frac{0.6-0}{3} = 0.2$:<br>$y_0 = e^{-(0)^2} = 1.000000$<br>$y_1 = e^{-(0.2)^2} = e^{-0.04} = 0.960789$<br>$y_2 = e^{-(0.4)^2} = e^{-0.16} = 0.852144$<br>$y_3 = e^{-(0.6)^2} = e^{-0.36} = 0.697676$<br><br><b>Step 2: Apply Simpson's 3/8 Integral Formula</b><br>$$I = \\frac{3h}{8} \\left[ (y_0 + y_3) + 3(y_1 + y_2) \\right]$$$$I = \\frac{3(0.2)}{8} \\left[ (1.000000 + 0.697676) + 3(0.960789 + 0.852144) \\right]$$$$I = 0.075000 \\left[ 1.697676 + 3(1.812933) \\right]$$$$I = 0.075000 \\left[ 1.697676 + 5.438799 \\right] = 0.075000 [7.136475] = 0.535236 \\approx 0.5352$$"
+  }
+];
     // =========================================================================
 
     let studentDetails = {};
@@ -908,11 +860,16 @@
                         startBtn.innerText = "Start Test";
                         startBtn.disabled = false;
                     } else {
-                        let h = Math.floor((timeUntilStart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                        let m = Math.floor((timeUntilStart % (1000 * 60 * 60)) / (1000 * 60));
-                        let s = Math.floor((timeUntilStart % (1000 * 60)) / 1000);
-                        
-                        errorMsg.innerText = `⏳ The test has not started yet.\nOpening in: ${h}h ${m}m ${s}s`;
+                        let days = Math.floor(timeUntilStart / (1000 * 60 * 60 * 24));
+let h = Math.floor((timeUntilStart % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+let m = Math.floor((timeUntilStart % (1000 * 60 * 60)) / (1000 * 60));
+let s = Math.floor((timeUntilStart % (1000 * 60)) / 1000);
+
+if (days > 0) {
+    errorMsg.innerText = `⏳ The test has not started yet.\nOpening in: ${days}d ${h}h ${m}m ${s}s`;
+} else {
+    errorMsg.innerText = `⏳ The test has not started yet.\nOpening in: ${h}h ${m}m ${s}s`;
+}
                     }
                 }, 1000); 
                 
@@ -1108,7 +1065,23 @@
             container.classList.remove('status-correct', 'status-incorrect');
             inputField.readOnly = true; 
 
-            let isCorrect = (q.type === "math") ? checkMathEquivalence(rawUserAns, q.answer, q.vars) : (rawUserAns.toLowerCase() === q.answer.toLowerCase());
+            let isCorrect = false;
+
+if (q.type === "math") {
+    isCorrect = checkMathEquivalence(rawUserAns, q.answer, q.vars);
+} else {
+    // Check if this particular question has a specific decimal tolerance assigned
+    if (q.tolerance !== undefined && rawUserAns.trim() !== "" && !isNaN(parseFloat(rawUserAns))) {
+        let userNum = parseFloat(rawUserAns);
+        let correctNum = parseFloat(q.answer);
+        
+        // Mark as correct if the absolute difference is within your relaxation window
+        isCorrect = Math.abs(userNum - correctNum) <= q.tolerance;
+    } else {
+        // Fall back to a strict literal match for non-numerical problems
+        isCorrect = (rawUserAns.toLowerCase() === q.answer.toLowerCase());
+    }
+}
 
             if (isCorrect) {
                 container.classList.add('status-correct');
